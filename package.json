@@ -1,0 +1,30 @@
+{
+    "name": "bomberman-mayhem",
+    "version": "0.0.1",
+    "private": true,
+    "repository": {
+        "url": "git+https://github.com/orion3dgames/bomberman-mayhem.git"
+    },
+    "description": "basic bomberman",
+    "main": "./dist/client/index.html",
+    "scripts": {
+        "client-dev": "yarn workspace bomberman-mayhem-client dev",
+        "client-build": "yarn workspace bomberman-mayhem-client build",
+        "server-dev": "yarn workspace bomberman-mayhem-server dev"
+    },
+    "workspaces": [
+        "packages/*"
+    ],
+    "author": "Orion3d",
+    "license": "MIT",
+    "browserslist": {
+        "production": [
+            "> 5%"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    }
+}

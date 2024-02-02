@@ -1,0 +1,19 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "es2015",
+        "sourceMap": false,
+        "outDir": "./dist/server",
+        "strict": false,
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "allowJs": true,
+        "moduleResolution": "bundler",
+        "types": [],
+        "typeRoots": ["node_modules/@types"],
+        "baseUrl": "."
+    },
+    "include": ["src/*", "src/**/*.d.ts"],
+    "exclude": ["node_modules", "**/*.spec.js"]
+}
