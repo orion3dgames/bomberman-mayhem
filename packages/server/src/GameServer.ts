@@ -6,7 +6,7 @@ import cors from "cors";
 import { Config } from "../../shared/Config";
 import Logger from "../../shared/Utils/Logger";
 
-import { Server, matchMaker } from "@colyseus/core";
+import { Server, matchMaker, LobbyRoom } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport";
 
 //////////////////////////////////////////////////
@@ -27,7 +27,7 @@ export default class GameServer {
         let clientFile = "index.html";
 
         // start server
-        const port = process.env.PORT || 8080;
+        const port = process.env.PORT || 3000;
         const app = express();
         app.use(cors());
 
@@ -37,6 +37,9 @@ export default class GameServer {
                 server: createServer(app),
             }),
         });
+
+        // Expose the "lobby" room.
+        gameServer.define("lobby", LobbyRoom);
 
         gameServer.listen(port).then(() => {
             // server is now running

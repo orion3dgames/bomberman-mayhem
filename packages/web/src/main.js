@@ -14,6 +14,12 @@ const firebaseConfig = {
     appId: "1:868406895398:web:a6be0981c4a7f4220157e7",
 };
 
+// Import our custom CSS
+import "./scss/style.scss";
+
+// Import all of Bootstrap's JS
+import { Dropdown } from "bootstrap";
+
 // Initialize Firebase
 initializeApp(firebaseConfig);
 
