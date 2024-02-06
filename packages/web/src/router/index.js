@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import { getCurrentUser } from "./auth_guard";
 import DefaultLayout from "../layouts/DefaultLayout.vue";
+import GameLayout from "../layouts/GameLayout.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -32,9 +33,9 @@ const router = createRouter({
             component: () => import("../views/Room.vue"),
         },
         {
-            path: "/play",
-            meta: { layout: DefaultLayout, requiresAuth: true },
-            component: () => import("../views/Play.vue"),
+            path: "/game",
+            meta: { layout: GameLayout, requiresAuth: true },
+            component: () => import("../views/Game.vue"),
         },
     ],
 });

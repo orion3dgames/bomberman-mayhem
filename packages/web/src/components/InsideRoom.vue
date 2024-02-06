@@ -1,6 +1,9 @@
 <template>
     <h1>{{ room.roomId }}</h1>
     <hr />
+
+    <button @click="startGame">Start Game</button>
+
     <ul> 
        <li v-for="(player, index) in players">
             {{ player.displayName }}
@@ -61,6 +64,11 @@ room.state.players.onRemove((entity, sessionId) => {
         }
     });
 });
+
+
+const startGame = () => {
+    router.push(`/game`);
+}
 
 
 ///////////////////////////////////////////////////////

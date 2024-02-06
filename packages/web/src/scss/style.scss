@@ -90,6 +90,22 @@ $success: #7952b3;
 // Custom styles
 //
 
+html,
 body {
-  padding: 1.5rem;
+  padding: 0px;
+  margin: 0px;
+}
+
+.gameContainer{
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.gameControl{
+  position: fixed;
+  left: 15px;
+  top: 15px;
+  z-index: 2;
 }
