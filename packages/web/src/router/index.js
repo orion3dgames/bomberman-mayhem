@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+import { getCurrentUser } from "./auth_guard";
 import DefaultLayout from "../layouts/DefaultLayout.vue";
 
 const router = createRouter({
@@ -21,11 +22,28 @@ const router = createRouter({
             component: () => import("../views/SignIn.vue"),
         },
         {
+            path: "/lobby",
+            meta: { layout: DefaultLayout, requiresAuth: true },
+            component: () => import("../views/Lobby.vue"),
+        },
+        {
+            path: "/room/:sessionId",
+            meta: { layout: DefaultLayout, requiresAuth: true },
+            component: () => import("../views/Room.vue"),
+        },
+        {
             path: "/play",
-            meta: { layout: DefaultLayout },
+            meta: { layout: DefaultLayout, requiresAuth: true },
             component: () => import("../views/Play.vue"),
         },
     ],
 });
 
+// your router file
+router.beforeEach(async (to) => {
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+    if (requiresAuth && !(await getCurrentUser())) {
+        return "/sign-in";
+    }
+});
 export default router;

@@ -9,7 +9,7 @@
 
             <ul class="nav me-auto">
               <li><router-link to="/" class="nav-link px-2 link-secondary">Home</router-link></li>
-              <li v-if="isLoggedIn"><router-link to="/play" class="nav-link px-2 link-body-emphasis">Play</router-link></li>
+              <li v-if="isLoggedIn"><router-link to="/lobby" class="nav-link px-2 link-body-emphasis">Lobby</router-link></li>
             </ul>
 
             <div class="d-flex" v-if="isLoggedIn">
