@@ -47,6 +47,7 @@ onMounted(()=>{
             rooms.forEach(room => {
                 allRooms.push(room);
             });
+            console.log("ALL ROOMS", allRooms);
         });
 
         lobbyJoined.onMessage("+", ([roomId, room]) => {
@@ -57,6 +58,7 @@ onMounted(()=>{
             } else {
                 allRooms.push(room);
             }
+            console.log("NEW/UPDATE ROOM", room);
         });
 
         lobbyJoined.onMessage("-", (roomId) => {
@@ -65,6 +67,7 @@ onMounted(()=>{
                     allRooms.splice(-1, 1);
                 }
             });
+            console.log("REMOVING ROOM", roomId);
         });
 
     }).catch(e => {

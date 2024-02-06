@@ -9,7 +9,7 @@ import Logger from "../../shared/Utils/Logger";
 import { Server, matchMaker, LobbyRoom } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport";
 
-import { MyRoom } from "./Rooms/MyRoom";
+import { GameRoom } from "./Rooms/GameRoom";
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
@@ -42,7 +42,7 @@ export default class GameServer {
 
         // Expose the "lobby" room.
         gameServer.define("lobby", LobbyRoom);
-        gameServer.define("myroom", MyRoom).enableRealtimeListing();
+        gameServer.define("gameroom", GameRoom).enableRealtimeListing();
 
         gameServer.listen(port).then(() => {
             // server is now running
