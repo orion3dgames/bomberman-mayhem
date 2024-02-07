@@ -13,7 +13,8 @@
             </ul>
 
             <div class="d-flex" v-if="isLoggedIn">
-              <router-link to="/register" class="btn btn-primary">My Account</router-link> 
+              
+              <router-link to="/register" class="btn btn-primary">{{ loggedInUser.displayName }}</router-link> 
               <router-link to="/register" class="btn btn-secondary" @click="handleSignOut">Sign Out</router-link> 
             </div>
 
@@ -36,12 +37,14 @@ import { getAuth,onAuthStateChanged, signOut } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
 const isLoggedIn = ref(true)
+const loggedInUser = ref({});
 
 // runs after firebase is initialized
 onAuthStateChanged(getAuth(),function(user) {
+  loggedInUser.value = user;
     if (user) {
+      
       isLoggedIn.value = true // if we have a user
     } else {
       isLoggedIn.value = false // if we do not

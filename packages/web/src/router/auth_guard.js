@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { getAuth, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
+import { generateUserName } from "../../../shared/Utils/Utils";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBvrFWbKRHZNcxguGNCX4zV3MCosxVcCDk",
@@ -11,6 +12,15 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+
+export async function loginAnonymously() {
+    let connected = await signInAnonymously(auth);
+    if (!connected.user.displayName) {
+        await updateProfile(auth.currentUser, {
+            displayName: generateUserName(),
+        });
+    }
+}
 
 export function getCurrentUser() {
     return new Promise((resolve, reject) => {

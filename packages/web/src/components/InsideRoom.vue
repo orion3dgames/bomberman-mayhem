@@ -18,26 +18,33 @@
 <script setup lang="ts">
 
 import { useRouter } from 'vue-router';
-import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { Room } from 'colyseus.js';
+import { onBeforeUnmount, ref } from 'vue';
+import { Client, Room } from 'colyseus.js';
+import { getAuth } from 'firebase/auth';
 
-const client = new Colyseus.Client('ws://localhost:3000');
+const client = new Colyseus.Client('ws://localhost:3000') as Client;
 const router = useRouter()
 const sessionId = router.currentRoute.value.params.sessionId;
+
+const auth = getAuth();
+const user = auth.currentUser;
 
 ///////////////////////////////////////////////////////
 // JOIN ROOM
 const joinOrCreate = async (sessionId) => {
     return new Promise<Room>((resolve, reject) => {  
+        let options = {
+            name: user?.displayName
+        }
         if(sessionId == 'NEWGAME'){
-            return client.create("gameroom", {}).then((joinedRoom:Room) => {
+            return client.create("gameroom", options).then((joinedRoom:Room) => {
                 resolve(joinedRoom);
             }).catch((e: any) => {
                 reject();
                 console.error("JOIN ERROR", e);
             });
         }else{
-            return client.joinById(sessionId).then((joinedRoom:Room) => {
+            return client.joinById(sessionId, options).then((joinedRoom:Room) => {
                 resolve(joinedRoom);
             }).catch((e: any) => {
                 reject();
@@ -65,9 +72,14 @@ room.state.players.onRemove((entity, sessionId) => {
     });
 });
 
+room.onMessage('START_GAME', (e)=>{
+    console.log('START GAME RECEIVED', e);
+    router.push('/game');
+});
+
 
 const startGame = () => {
-    router.push(`/game`);
+    room.send('START_GAME_REQUESTED', { roomId: room.roomId})
 }
 
 

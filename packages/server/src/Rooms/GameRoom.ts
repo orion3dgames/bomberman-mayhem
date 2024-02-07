@@ -44,10 +44,12 @@ export class GameRoom extends Room<GameState> {
         }, gameConfig.pingInterval);
 
         // Client message listeners:
-        this.onMessage("ready", (client, state: boolean) => {});
+        this.onMessage("START_GAME_REQUESTED", (client, state: boolean) => {
+            this.broadcast("START_GAME", true);
+        });
     }
 
-    onAuth(client: Client) {
+    onAuth(client: Client, auth) {
         //No more space at table
         if (this.state.players.size == gameConfig.maxClients) throw new ServerError(gameConfig.roomFullCode, "room is full");
 
@@ -56,7 +58,7 @@ export class GameRoom extends Room<GameState> {
             Object.values(this._reconnections)[0].reject();
         }
 
-        return true;
+        return auth;
     }
 
     onJoin(client: Client) {
@@ -66,7 +68,7 @@ export class GameRoom extends Room<GameState> {
             client.sessionId,
             new Player({
                 sessionId: client.sessionId,
-                displayName: generateUserName(),
+                displayName: client.auth.name,
                 admin: this.state.players.size == 0,
             })
         );

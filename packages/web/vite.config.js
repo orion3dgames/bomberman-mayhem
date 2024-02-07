@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { join } from "path";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [vue(), nodePolyfills()],
     server: {
         port: 8080,
         hot: true,
@@ -15,5 +16,7 @@ export default defineConfig({
             "@": join(__dirname, "src"),
         },
     },
-    define: { "process.env": {} },
+    define: {
+        "process.env": {},
+    },
 });
