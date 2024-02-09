@@ -28,12 +28,17 @@ const router = createRouter({
             component: () => import("../views/Lobby.vue"),
         },
         {
-            path: "/room/:sessionId",
+            path: "/create",
+            meta: { layout: DefaultLayout, requiresAuth: true },
+            component: () => import("../views/Create.vue"),
+        },
+        {
+            path: "/room/:roomId",
             meta: { layout: DefaultLayout, requiresAuth: true },
             component: () => import("../views/Room.vue"),
         },
         {
-            path: "/game",
+            path: "/game/:roomId",
             meta: { layout: GameLayout, requiresAuth: true },
             component: () => import("../views/Game.vue"),
         },

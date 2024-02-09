@@ -1,5 +1,7 @@
 <template>
-    <div>
+
+      <!--
+        <div>
         <div class="container mb-3">
           <nav class="navbar navbar-expand-lg d-flex flex-wrap bg-body-tertiary">
 
@@ -30,12 +32,21 @@
           <router-view />
         </div>
     </div>
+    -->
+  <div style="padding: 15px; border-bottom: 1px solid #EEEE;;">
+    <router-link to="/" class="logo">SOMETHING</router-link>
+    <span class="badge bg-primary float-end">{{ auth.currentUser.displayName }}</span>
+  </div>
+  <div style="padding: 15px;">
+    <router-view />
+  </div>
 </template>
 <script setup>
 import { ref, watchEffect } from 'vue' // used for conditional rendering
 import { getAuth,onAuthStateChanged, signOut } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 
+const auth = getAuth();
 const router = useRouter()
 const isLoggedIn = ref(true)
 const loggedInUser = ref({});

@@ -1,23 +1,41 @@
 import { Engine, Scene, FreeCamera, Vector3, MeshBuilder, StandardMaterial, Color3, HemisphericLight } from "@babylonjs/core";
+import { useStore } from "../store/index";
+import { useRouter } from "vue-router";
+import { Entity } from "./Entities/Entity";
 
-const createScene = (canvas: HTMLCanvasElement) => {
-    const engine = new Engine(canvas);
-    const scene = new Scene(engine);
+const store = useStore();
 
-    const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
-    camera.setTarget(Vector3.Zero());
-    camera.attachControl(canvas, true);
+export class GameController {
+    private scene: Scene;
+    private engine: Engine;
+    private room;
 
-    new HemisphericLight("light", Vector3.Up(), scene);
+    public players = new Map();
 
-    const box = MeshBuilder.CreateBox("box", { size: 2 }, scene);
-    const material = new StandardMaterial("box-material", scene);
-    material.diffuseColor = Color3.Blue();
-    box.material = material;
+    constructor(canvas: HTMLCanvasElement) {
+        this.engine = new Engine(canvas);
+        this.scene = new Scene(this.engine);
 
-    engine.runRenderLoop(() => {
-        scene.render();
-    });
-};
+        const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), this.scene);
+        camera.setTarget(Vector3.Zero());
+        camera.attachControl(canvas, true);
 
-export { createScene };
+        new HemisphericLight("light", Vector3.Up(), this.scene);
+
+        this.room = store.room;
+        this.sessionId = this.room.sessionId;
+
+        this.room.state.players.onAdd((entity, sessionId) => {
+            let player = new Entity(this.scene);
+            this.players.set(sessionId, player);
+        });
+
+        this.engine.runRenderLoop(() => {
+            this.scene.render();
+        });
+
+        this.scene.registerBeforeRender(() => {
+            let delta = this.engine.getFps();
+        });
+    }
+}

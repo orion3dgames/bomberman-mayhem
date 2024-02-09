@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { loginAnonymously, auth } from "./router/auth_guard";
+import { createPinia } from "pinia";
 
 // Import our custom CSS
 import "./scss/style.scss";
@@ -18,8 +19,10 @@ if (!auth.currentUser) {
     await loginAnonymously();
 }
 
+const pinia = createPinia();
 const app = createApp(App);
 
+app.use(pinia);
 app.use(router);
 
 app.mount("#app");

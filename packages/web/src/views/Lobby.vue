@@ -1,27 +1,25 @@
 <template>
-    <h1> Play </h1>
+    <button @click="createGame" class="btn bg-primary">Create Game</button>
     <hr>
-    <button @click="createGame">Create Game</button>
-    <hr>
-   
-    <table class="table">
+    <table class="table table-sm table-dark" v-if="allRooms.length > 0">
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Clients</th>
+                <th>Players</th>
+                <th>Map</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="(room, index) in allRooms">
-                <td>{{room.roomId }}</td>
-                <td>{{room.clients }}</td>
-                <td><button @click="joinGame(room.roomId)">Join Game</button></td>
+                <td>#{{room.roomId }}</td>
+                <td>{{room.clients}}/4</td>
+                <td>Square</td>
+                <td ><button @click="joinGame(room.roomId)" class="btn btn-sm bg-primary float-end">Join</button></td>
             </tr>
         </tbody>
     </table>
-
-    {{ allRooms }}
+    <div v-else>No Rooms Available...</div>
 
 </template>
 
@@ -88,8 +86,7 @@ const joinGame = (roomId) => {
 }
 
 const createGame = () => {
-    let sessionId = "NEWGAME";
-    router.push(`/room/${sessionId}`);
+    router.push(`/create`);
 }
   
 </script>

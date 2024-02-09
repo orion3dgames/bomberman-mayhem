@@ -10,6 +10,7 @@ export class GameRoom extends Room<GameState> {
     public inactivityTimeoutRef?: Delayed;
     public delayedRoundStartRef?: Delayed;
     public delayedRoomDeleteRef?: Delayed;
+    public maxClients: number = 4;
 
     public autoDispose = true;
     private LOBBY_CHANNEL = "GameRoom";
@@ -30,13 +31,18 @@ export class GameRoom extends Room<GameState> {
         return id;
     }
 
-    async onCreate() {
-        this.roomId = await this.registerRoomId();
+    async onCreate(e) {
+        if (!e.roomId) {
+            this.roomId = await this.registerRoomId();
+        } else {
+            this.roomId = e.roomId;
+        }
+
+        console.log("Creating Room", this.roomId);
+
         //this.setPrivate();
         this.setState(new GameState({}));
         this.clock.start();
-
-        this.log("Created");
 
         //Send ping messages to all clients
         this.clock.setInterval(() => {
@@ -76,9 +82,10 @@ export class GameRoom extends Room<GameState> {
 
     async onLeave(client: Client, consented: boolean) {
         this.deletePlayer(client.sessionId);
-        /*
-        this.log(`Leave: ` + consented, client);
 
+        console.log(`Leave: ` + consented, client.sessionId);
+
+        /*
         const player = this.state.players.get(client.sessionId);
         player.disconnected = true;
 
