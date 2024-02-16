@@ -122,11 +122,10 @@ body {
   position: fixed;
   width: 100%;
   height: 100%;
-  z-index: 1;
 }
 
 .gameControl{
-  position: fixed;
+  position: fixed; 
   left: 15px;
   top: 15px;
   z-index: 2;
