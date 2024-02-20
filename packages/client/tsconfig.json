@@ -1,19 +1,17 @@
 {
-    "compileOnSave": true,
     "compilerOptions": {
-        "target": "ES6",
-        "module": "es2015",
-        "sourceMap": false,
-        "outDir": "./dist/server",
-        "strict": false,
-        "experimentalDecorators": true,
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "strict": true,
+        "jsx": "preserve",
+        "sourceMap": true,
+        "resolveJsonModule": true,
         "esModuleInterop": true,
-        "allowJs": true,
-        "moduleResolution": "bundler",
-        "types": [],
-        "typeRoots": ["node_modules/@types"],
-        "baseUrl": "."
+        "allowImportingTsExtensions": true,
+        "noEmit": true,
+        "lib": ["esnext", "dom"],
+        "types": ["vite/client"]
     },
-    "include": ["src/*", "src/**/*.d.ts"],
-    "exclude": ["node_modules", "**/*.spec.js"]
+    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
 }

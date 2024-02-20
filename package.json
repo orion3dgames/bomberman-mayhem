@@ -8,10 +8,9 @@
     "description": "basic bomberman",
     "main": "./dist/client/index.html",
     "scripts": {
-        "client-dev": "yarn workspace bomberman-mayhem-client dev",
-        "client-build": "yarn workspace bomberman-mayhem-client build",
         "server-dev": "yarn workspace bomberman-mayhem-server dev",
-        "web-dev": "yarn workspace bomberman-mayhem-web dev"
+        "client-dev": "yarn workspace bomberman-mayhem-client dev",
+        "client-build": "yarn workspace bomberman-mayhem-client build"
     },
     "workspaces": [
         "packages/*"

@@ -23,7 +23,6 @@ export class GameRoom extends Room<GameState> {
 
     private async registerRoomId(): Promise<string> {
         const currentIds = await this.presence.smembers(this.LOBBY_CHANNEL);
-        console.log(currentIds);
         let id;
         do id = generateRoomId();
         while (currentIds.includes(id));
@@ -81,27 +80,30 @@ export class GameRoom extends Room<GameState> {
     }
 
     async onLeave(client: Client, consented: boolean) {
-        this.deletePlayer(client.sessionId);
-
         console.log(`Leave: ` + consented, client.sessionId);
 
+        // flag client as inactive for other users
+        //this.state.players.get(client.sessionId).disconnected = true;
+
+        this.deletePlayer(client.sessionId);
+
+        //
+        client.leave();
         /*
-        const player = this.state.players.get(client.sessionId);
-        player.disconnected = true;
-
-        //Remove player if leave was consented or if they are not in round
-        if (consented || !(this.state.roundState != "idle" && player.ready)) {
-            this.deletePlayer(client.sessionId);
-        }
-
-        //Do not allow for rejoin if leave was consented
-        if (consented) return;
-
-        //Add player back if they rejoin
         try {
-            this.log(`Allow reconnection`, client);
-        } catch (error) {}
-        */
+            if (consented) {
+                throw new Error("consented leave");
+            }
+
+            // allow disconnected client to reconnect into this room until 20 seconds
+            await this.allowReconnection(client, 20);
+
+            // client returned! let's re-activate it.
+            this.state.players.get(client.sessionId).disconnected = false;
+        } catch (e) {
+            // 20 seconds expired. let's remove the client.
+            this.state.players.delete(client.sessionId);
+        }*/
     }
 
     onDispose() {

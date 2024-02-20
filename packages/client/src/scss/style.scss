@@ -1,0 +1,76 @@
+
+@import "../../../../node_modules/picnic/picnic.min.css";
+
+html,
+body {
+  padding: 0px;
+  margin: 0px;
+  height: 100%;
+  width: 100%;
+  
+}
+.logo{
+  color: #FFFFFF;
+  font-size: 40px;;
+  font-weight: bolder;
+  text-decoration: none;;
+  padding: 25px;
+}
+
+#app{
+  height: 100%;
+  width: 100%;
+  background-image: linear-gradient(to right top, #a4bea3, #8ea885, #799268, #677c4b, #56672e);
+}
+
+.container{
+  text-align: left;
+  width: 90%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.float-end{
+  float: right;;
+}
+
+.centered{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.text-center{
+  text-align: center;;
+}
+
+.panel{
+  background: #FFF;
+  padding: 15px;
+  margin-bottom: 15px;;
+}
+
+.disconnected{
+  text-decoration: line-through;
+  color: gray;
+}
+
+.gameContainer{ 
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 1;
+  top: 0px;
+  left: 0px;
+}
+
+.gameControl{
+  position: fixed; 
+  right: 15px;
+  top: 15px;
+  z-index: 2;
+}

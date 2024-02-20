@@ -18,9 +18,11 @@ export class GameController {
     public players = new Map();
     public generator: LevelController;
     public camera: PlayerCamera;
-    public sessionId: number;
+    public sessionId: string = "";
 
     constructor(canvas: HTMLCanvasElement) {
+        console.log(canvas);
+
         this.engine = new Engine(canvas);
         this.scene = new Scene(this.engine);
 
@@ -34,13 +36,18 @@ export class GameController {
         this.camera = new PlayerCamera(this);
 
         // setup colyseus events
-        this.room = store.room;
-        this.sessionId = this.room.sessionId;
-        this.room.state.players.onAdd((entity, sessionId) => {
-            let currentPlayer = sessionId === this.sessionId;
-            let player = new Entity(sessionId, this.scene, this, currentPlayer);
-            this.players.set(sessionId, player);
-        });
+        this.room = store.currentRoom;
+        if (this.room) {
+            this.sessionId = this.room.sessionId;
+            this.room.state.players.onAdd((entity, sessionId) => {
+                let currentPlayer = sessionId === this.sessionId;
+                let player = new Entity(sessionId, this.scene, this, currentPlayer);
+                this.players.set(sessionId, player);
+            });
+            this.room.state.players.onRemove((entity, sessionId) => {
+                this.players.delete(sessionId);
+            });
+        }
 
         //
         window.addEventListener("keydown", (ev) => {
