@@ -8,12 +8,8 @@ import { Rectangle } from "@babylonjs/gui/2D/controls/rectangle";
 import { TextBlock } from "@babylonjs/gui/2D/controls/textBlock";
 import { Control } from "@babylonjs/gui/2D/controls/control";
 import { Button } from "@babylonjs/gui/2D/controls/button";
-import { InputText } from "@babylonjs/gui/2D/controls/inputText";
-import { InputPassword } from "@babylonjs/gui/2D/controls/inputPassword";
-import { Image } from "@babylonjs/gui/2D/controls/image";
 
 import { GameController } from "../Controllers/GameController";
-import { AssetContainer } from "@babylonjs/core/assetContainer";
 import { SceneName } from "../../../shared/types";
 import { ScrollViewer } from "@babylonjs/gui/2D/controls/scrollViewers/scrollViewer";
 import { Grid } from "@babylonjs/gui/2D/controls/grid";
@@ -25,8 +21,6 @@ export class RoomScene {
     public _newState: SceneName;
     public _button: Button;
     public _ui;
-    public _environment;
-    public _loadedAssets: AssetContainer[] = [];
     public _shadow;
 
     public room;
@@ -66,7 +60,7 @@ export class RoomScene {
 
         // setup colyseus room
         if (this.room) {
-            window.location.hash = this.room.sessionId;
+            window.location.hash = this.room.roomId;
             this.sessionId = this.room.sessionId;
             this.room.state.players.onAdd((entity, sessionId) => {
                 console.log("PLAYER ADDED", entity);
@@ -146,6 +140,7 @@ export class RoomScene {
         fullWidth.addControl(columnRect);
 
         const subGrid = new Grid();
+        subGrid.addRowDefinition(padding, true);
         subGrid.addColumnDefinition(1);
         subGrid.addRowDefinition(30, true); // HEADER CANCEL BUTTON
         subGrid.addRowDefinition(padding, true);
@@ -154,7 +149,7 @@ export class RoomScene {
         subGrid.addRowDefinition(1); // MAIN CONTENT
         subGrid.addRowDefinition(padding, true);
         subGrid.addRowDefinition(60, true); // CREATE BUTTON
-        subGrid.setPadding(padding, padding, padding, padding);
+        subGrid.addRowDefinition(padding, true);
         columnRect.addControl(subGrid);
 
         const cancelButton = Button.CreateSimpleButton("cancelButton", "CANCEL");
@@ -165,7 +160,7 @@ export class RoomScene {
         cancelButton.color = "#FFF";
         cancelButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         cancelButton.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        subGrid.addControl(cancelButton, 0);
+        subGrid.addControl(cancelButton, 1);
 
         cancelButton.onPointerUpObservable.add(() => {
             this.room.leave();
@@ -176,7 +171,7 @@ export class RoomScene {
         const subHeaderGrid = new Rectangle();
         subHeaderGrid.background = "white";
         subHeaderGrid.thickness = 0;
-        subGrid.addControl(subHeaderGrid, 2);
+        subGrid.addControl(subHeaderGrid, 3);
 
         const titleGame = new TextBlock("titleGame" + this.room.roomId);
         titleGame.width = 1;
@@ -188,7 +183,7 @@ export class RoomScene {
         const subMainGrid = new Rectangle();
         subMainGrid.background = "white";
         subMainGrid.thickness = 0;
-        subGrid.addControl(subMainGrid, 4);
+        subGrid.addControl(subMainGrid, 5);
 
         // add scrollable container
         const chatScrollViewer = new ScrollViewer("chatScrollViewer");
@@ -218,7 +213,7 @@ export class RoomScene {
         createBtn.thickness = 1;
         createBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         createBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        subGrid.addControl(createBtn, 6);
+        subGrid.addControl(createBtn, 7);
 
         createBtn.onPointerUpObservable.add(() => {
             this._game.setScene(SceneName.GAME);

@@ -17,8 +17,6 @@ import { ScrollViewer } from "@babylonjs/gui/2D/controls/scrollViewers/scrollVie
 import { Grid } from "@babylonjs/gui/2D/controls/grid";
 import { RoomAvailable } from "colyseus.js/lib/Room";
 import { StackPanel } from "@babylonjs/gui/2D/controls/stackPanel";
-import { generateUserName } from "../Utils/Utils";
-import { LinearGradient } from "@babylonjs/gui/2D/controls/gradient/LinearGradient";
 
 export class HomeScene {
     private _game: GameController;

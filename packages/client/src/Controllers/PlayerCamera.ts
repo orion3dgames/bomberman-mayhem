@@ -1,5 +1,4 @@
 import { Scene } from "@babylonjs/core/scene";
-import { Entity } from "../Entities/Entity";
 import { UniversalCamera } from "@babylonjs/core/Cameras/universalCamera";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";

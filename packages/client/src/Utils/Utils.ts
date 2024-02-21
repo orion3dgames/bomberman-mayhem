@@ -1,5 +1,4 @@
-import { animals, colors } from "../../../shared/Utils/namesDictionary";
-import { uniqueNamesGenerator } from "unique-names-generator";
+import { uniqueNamesGenerator, animals, colors } from "unique-names-generator";
 
 const isLocal = function () {
     return window.location.host === "localhost:8080";

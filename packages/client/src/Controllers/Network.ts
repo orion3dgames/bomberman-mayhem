@@ -37,6 +37,8 @@ export class Network {
         return new Promise(async (resolve: any, reject: any) => {
             let options = {
                 name: displayName,
+                map: "map_01",
+                maxClient: 4,
             };
             this._client
                 .create("gameroom", options)
@@ -91,6 +93,8 @@ export class Network {
                         .create("gameroom", {
                             roomId: roomId,
                             name: user.displayName,
+                            map: "map_01",
+                            maxClient: 4,
                         })
                         .then((joinedRoom: Room) => {
                             console.info("CREATE SUCCESS", joinedRoom);

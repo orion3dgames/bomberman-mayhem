@@ -1,5 +1,4 @@
-import { animals, colors } from "./namesDictionary";
-import { uniqueNamesGenerator } from "unique-names-generator";
+import { uniqueNamesGenerator, animals, colors } from "unique-names-generator";
 
 /**
  * Generates a random uppercase string with length of `4`

@@ -1,35 +1,23 @@
 import { Scene } from "@babylonjs/core/scene";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { Color4 } from "@babylonjs/core/Maths/math.color";
-import { FreeCamera } from "@babylonjs/core/Cameras/freeCamera";
-
-import { AdvancedDynamicTexture } from "@babylonjs/gui/2D/advancedDynamicTexture";
-import { Rectangle } from "@babylonjs/gui/2D/controls/rectangle";
-import { TextBlock } from "@babylonjs/gui/2D/controls/textBlock";
-import { Control } from "@babylonjs/gui/2D/controls/control";
-import { Button } from "@babylonjs/gui/2D/controls/button";
-import { InputText } from "@babylonjs/gui/2D/controls/inputText";
-import { InputPassword } from "@babylonjs/gui/2D/controls/inputPassword";
-import { Image } from "@babylonjs/gui/2D/controls/image";
 
 import { GameController } from "../Controllers/GameController";
-import { AssetContainer } from "@babylonjs/core/assetContainer";
 import { SceneName } from "../../../shared/types";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 import { LevelController } from "../Controllers/LevelController";
 import { PlayerCamera } from "../Controllers/PlayerCamera";
 import { Entity } from "../Entities/Entity";
+import { PlayerUI } from "../Controllers/PlayerUI";
 
 export class GameScene {
-    private _game: GameController;
+    public _game: GameController;
     public _scene: Scene;
     public _engine: Engine;
     public _newState: SceneName;
-    public _button: Button;
     public _ui;
     public _environment;
-    public _loadedAssets: AssetContainer[] = [];
     public _shadow;
     public _generator: LevelController;
     public _camera: PlayerCamera;
@@ -65,6 +53,9 @@ export class GameScene {
         // start camera
         this._camera = new PlayerCamera(this._scene);
 
+        // start UI
+        this._ui = new PlayerUI(this._scene, this._engine, this);
+
         // setup colyseus room
         // hack for devlopement
         if (!this._game.joinedRoom) {
@@ -80,7 +71,13 @@ export class GameScene {
         this.room.state.players.onAdd((entity, sessionId) => {
             console.log("ENTITY ADDED", entity);
             let currentPlayer = sessionId === this.sessionId;
-            this.entities.set(sessionId, new Entity(sessionId, this._scene, this, entity, currentPlayer));
+            if (currentPlayer) {
+                let player = new Entity(sessionId, this._scene, this, entity, currentPlayer);
+                this._ui.setCurrentPlayer(player);
+                this.entities.set(sessionId, player);
+            } else {
+                this.entities.set(sessionId, new Entity(sessionId, this._scene, this, entity, currentPlayer));
+            }
         });
 
         // removing player

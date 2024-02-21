@@ -4,6 +4,11 @@ import { DebugBox } from "./UI/DebugBox";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { Rectangle } from "@babylonjs/gui/2D/controls/rectangle";
 import { TextBlock } from "@babylonjs/gui/2D/controls/textBlock";
+import { Button } from "@babylonjs/gui/2D/controls/button";
+import { Control } from "@babylonjs/gui/2D/controls/control";
+import { Entity } from "../Entities/Entity";
+import { SceneName } from "../../../shared/types";
+import { GameScene } from "../Scenes/GameScene";
 
 export class PlayerUI {
     private _scene: Scene;
@@ -17,7 +22,7 @@ export class PlayerUI {
     public _uiLabels: AdvancedDynamicTexture;
     public _DebugBox: DebugBox;
 
-    constructor(scene, engine, entity) {
+    constructor(scene, engine, gameScene: GameScene) {
         this._scene = scene;
         this._engine = engine;
 
@@ -27,11 +32,32 @@ export class PlayerUI {
         // create adt
         this._ui = AdvancedDynamicTexture.CreateFullscreenUI("UI_Player", true, this._scene);
 
-        //
-        this._currentPlayer = entity;
+        // create base ui
+        this.create(gameScene);
+    }
 
+    setCurrentPlayer(entity) {
         // create debug ui + events
         this._DebugBox = new DebugBox(this._ui, this._engine, this._scene, entity);
+    }
+
+    create(gameScene) {
+        const cancelButton = Button.CreateSimpleButton("cancelButton", "QUIT");
+        cancelButton.widthInPixels = 100;
+        cancelButton.topInPixels = 15;
+        cancelButton.leftInPixels = -15;
+        cancelButton.height = "30px";
+        cancelButton.color = "black";
+        cancelButton.background = "white";
+        cancelButton.thickness = 1;
+        cancelButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+        cancelButton.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        this._ui.addControl(cancelButton);
+
+        cancelButton.onPointerUpObservable.add(() => {
+            gameScene._room.leave();
+            gameScene._game.setScene(SceneName.HOME);
+        });
     }
 
     public createEntityLabel(entity) {

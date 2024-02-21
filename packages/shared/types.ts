@@ -35,3 +35,12 @@ export enum SceneName {
 export type User = {
     displayName: string;
 };
+
+///////////////////////////////
+///////////////////////////////
+///////////////////////////////
+
+export enum ServerMsg {
+    PING = 1,
+    PONG,
+}

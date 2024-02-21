@@ -5,11 +5,12 @@ import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Scene } from "@babylonjs/core/scene";
 import { LevelController } from "../Controllers/LevelController";
 import { PlayerInput } from "../Controllers/PlayerInput";
-import { Mesh, TransformNode } from "@babylonjs/core";
 import { PlayerCamera } from "../Controllers/PlayerCamera";
 import { PlayerUI } from "../Controllers/PlayerUI";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { GameScene } from "../Scenes/GameScene";
+import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
+import { Mesh } from "@babylonjs/core/Meshes/mesh";
 
 export class Entity extends TransformNode {
     public _camera: PlayerCamera;
@@ -18,8 +19,9 @@ export class Entity extends TransformNode {
     public _input: PlayerInput;
     public _game;
     public _room;
-    public _playerUI: PlayerUI;
+    public _ui: PlayerUI;
     public playerMesh: Mesh;
+    public isCurrentPlayer;
 
     public characterLabel;
 
@@ -36,24 +38,26 @@ export class Entity extends TransformNode {
         this._engine = gameScene._engine;
         this._generator = gameScene._generator;
         this._room = gameScene.room;
+        this._game = gameScene._game;
+        this._ui = gameScene._ui;
+        this.isCurrentPlayer = isCurrentPlayer;
 
         //
         this.sessionId = data.sessionId;
         this.name = data.displayName ?? "ERROR";
         console.log(data);
 
-        // if current player, monito inputs
+        // if current player, monitor inputs and set camera
         if (isCurrentPlayer) {
             this._input = new PlayerInput(this);
             this._camera = gameScene._camera;
-            this._playerUI = new PlayerUI(this._scene, this._engine, this);
         }
 
         // spawn player
         this.spawn();
 
         // show entoty label
-        this.characterLabel = this._playerUI.createEntityLabel(this);
+        this.characterLabel = this._ui.createEntityLabel(this);
     }
 
     public spawn() {
@@ -73,7 +77,11 @@ export class Entity extends TransformNode {
 
     public update(delta: number) {
         this.move();
-        this._camera.tween(this);
+
+        // only for current player
+        if (this.isCurrentPlayer) {
+            this._camera.tween(this);
+        }
     }
 
     public updateServerRate(delta: number) {}
