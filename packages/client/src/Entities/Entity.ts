@@ -3,42 +3,60 @@ import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Scene } from "@babylonjs/core/scene";
-import { GameController } from "../MyFirstScene";
-import { LevelController } from "../LevelController";
+import { LevelController } from "../Controllers/LevelController";
 import { PlayerInput } from "../Controllers/PlayerInput";
 import { Mesh, TransformNode } from "@babylonjs/core";
 import { PlayerCamera } from "../Controllers/PlayerCamera";
+import { PlayerUI } from "../Controllers/PlayerUI";
+import { Engine } from "@babylonjs/core/Engines/engine";
+import { GameScene } from "../Scenes/GameScene";
 
 export class Entity extends TransformNode {
-    private _camera: PlayerCamera;
-    public _scene: Scene;
+    public _camera: PlayerCamera;
+    public _engine: Engine;
     public _generator: LevelController;
-    private _input: PlayerInput;
+    public _input: PlayerInput;
+    public _game;
+    public _room;
+    public _playerUI: PlayerUI;
+    public playerMesh: Mesh;
 
-    private playerMesh: Mesh;
+    public characterLabel;
 
+    public sessionId: string = "";
+    public name: string = "";
     public row: number = 0;
     public col: number = 0;
 
-    constructor(name, scene, game: GameController, isCurrentPlayer = false) {
+    constructor(name: string, scene: Scene, gameScene: GameScene, data, isCurrentPlayer = false) {
         super(name, scene);
-        //
-        this._scene = game.scene;
-        this._generator = game.generator;
-        this._camera = game.camera;
-        this._input = game.input;
 
-        // spawn player
-        this.spawn();
+        // set variables
+        this._scene = scene;
+        this._engine = gameScene._engine;
+        this._generator = gameScene._generator;
+        this._room = gameScene.room;
+
+        //
+        this.sessionId = data.sessionId;
+        this.name = data.displayName ?? "ERROR";
+        console.log(data);
 
         // if current player, monito inputs
         if (isCurrentPlayer) {
             this._input = new PlayerInput(this);
-            this._camera = game.camera;
+            this._camera = gameScene._camera;
+            this._playerUI = new PlayerUI(this._scene, this._engine, this);
         }
+
+        // spawn player
+        this.spawn();
+
+        // show entoty label
+        this.characterLabel = this._playerUI.createEntityLabel(this);
     }
 
-    public async spawn() {
+    public spawn() {
         let colors = [Color3.Red(), Color3.Blue(), Color3.Black(), Color3.White()];
         let spawnPoint = this._generator.getAvailableSpawnPoint();
         this.position = spawnPoint.position;
@@ -60,7 +78,7 @@ export class Entity extends TransformNode {
 
     public updateServerRate(delta: number) {}
 
-    public async move() {
+    public move() {
         //
         this.position = new Vector3(this.row, 0, this.col);
 

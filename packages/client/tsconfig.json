@@ -1,17 +1,21 @@
 {
+    "compileOnSave": true,
     "compilerOptions": {
-        "target": "esnext",
-        "module": "esnext",
-        "moduleResolution": "node",
-        "strict": true,
-        "jsx": "preserve",
-        "sourceMap": true,
-        "resolveJsonModule": true,
+        "target": "ES6",
+        "module": "CommonJS",
+        "sourceMap": false,
+        "outDir": "./dist/server",
+        "strict": false,
+        "experimentalDecorators": true,
         "esModuleInterop": true,
-        "allowImportingTsExtensions": true,
-        "noEmit": true,
-        "lib": ["esnext", "dom"],
-        "types": ["vite/client"]
+        "allowJs": true,
+        "moduleResolution": "node",
+        "types": ["node"],
+        "baseUrl": ".",
+        "paths": {
+            "@shared/*": ["../shared/*"]
+        }
     },
-    "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"]
+    "include": ["src/*", "src/**/*.d.ts", "src/**/*.ts", "../shared/**/*.js"],
+    "exclude": ["node_modules", "**/*.spec.js"]
 }

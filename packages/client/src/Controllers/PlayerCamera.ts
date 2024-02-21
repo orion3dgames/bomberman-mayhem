@@ -3,14 +3,13 @@ import { Entity } from "../Entities/Entity";
 import { UniversalCamera } from "@babylonjs/core/Cameras/universalCamera";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
-import { GameController } from "../MyFirstScene";
 
 export class PlayerCamera {
     private _scene: Scene;
     private _cameraRoot;
 
-    constructor(game: GameController) {
-        this._scene = game.scene;
+    constructor(scene) {
+        this._scene = scene;
 
         //set up camera
         var cameraRoot = new TransformNode("cameraRoot");

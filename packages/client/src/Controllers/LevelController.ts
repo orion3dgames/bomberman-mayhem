@@ -4,8 +4,8 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Scene } from "@babylonjs/core/scene";
 
-import { map_01 } from "./maps";
-import { tiles, Tile } from "./maps/tiles";
+import { map_01 } from "../Maps";
+import { tiles, Tile } from "../Maps/tiles";
 
 export class LevelController {
     private _scene: Scene;

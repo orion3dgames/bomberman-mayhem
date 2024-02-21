@@ -1,7 +1,7 @@
 import { KeyboardEventTypes } from "@babylonjs/core/Events/keyboardEvents";
 import { Scene } from "@babylonjs/core/scene";
 import { Entity } from "../Entities/Entity";
-import { LevelController } from "../LevelController";
+import { LevelController } from "./LevelController";
 
 export class PlayerInput {
     private _scene: Scene;
