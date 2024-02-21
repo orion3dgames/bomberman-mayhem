@@ -55,7 +55,8 @@ export class PlayerUI {
         this._ui.addControl(cancelButton);
 
         cancelButton.onPointerUpObservable.add(() => {
-            gameScene._room.leave();
+            window.location.hash = "";
+            gameScene.room.leave();
             gameScene._game.setScene(SceneName.HOME);
         });
     }

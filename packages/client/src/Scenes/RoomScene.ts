@@ -14,6 +14,7 @@ import { SceneName } from "../../../shared/types";
 import { ScrollViewer } from "@babylonjs/gui/2D/controls/scrollViewers/scrollViewer";
 import { Grid } from "@babylonjs/gui/2D/controls/grid";
 import { StackPanel } from "@babylonjs/gui/2D/controls/stackPanel";
+import { Room } from "colyseus.js";
 
 export class RoomScene {
     private _game: GameController;
@@ -23,7 +24,7 @@ export class RoomScene {
     public _ui;
     public _shadow;
 
-    public room;
+    public room: Room;
     public sessionId;
     public players = new Map();
 
@@ -39,7 +40,7 @@ export class RoomScene {
         this._game = game;
 
         // room
-        this.room = this._game.joinedRoom;
+        this.room = this._game.joinedRoom as Room;
 
         // create scene
         let scene = new Scene(this._game.engine);
@@ -216,6 +217,7 @@ export class RoomScene {
         subGrid.addControl(createBtn, 7);
 
         createBtn.onPointerUpObservable.add(() => {
+            this.room.removeAllListeners();
             this._game.setScene(SceneName.GAME);
         });
 

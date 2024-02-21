@@ -47,8 +47,9 @@ export class Entity extends TransformNode {
         this.name = data.displayName ?? "ERROR";
         console.log(data);
 
-        // if current player, monitor inputs and set camera
+        // if current player
         if (isCurrentPlayer) {
+            // set inputs
             this._input = new PlayerInput(this);
             this._camera = gameScene._camera;
         }
