@@ -1,5 +1,3 @@
-import { uniqueNamesGenerator, animals, colors } from "unique-names-generator";
-
 /**
  * Generates a random uppercase string with length of `4`
  * @returns the string
@@ -9,16 +7,4 @@ export function generateRoomId(): string {
     let result = "";
     for (let i = 0; i < 4; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
     return result;
-}
-
-/**
- * Generates a random username
- * @returns the username
- */
-export function generateUserName(): string {
-    return uniqueNamesGenerator({
-        dictionaries: [colors, animals],
-        separator: " ",
-        style: "capital",
-    });
 }

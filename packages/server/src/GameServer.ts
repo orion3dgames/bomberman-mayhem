@@ -49,6 +49,9 @@ export default class GameServer {
             Logger.info("[gameserver] listening on http://localhost:" + port);
         });
 
+        // simulate 200ms latency between server and client.
+        gameServer.simulateLatency(300);
+
         // server staic files
         app.use(express.static(indexPath));
 

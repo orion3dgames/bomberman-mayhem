@@ -3,10 +3,10 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { Color4 } from "@babylonjs/core/Maths/math.color";
 
 import { GameController } from "../Controllers/GameController";
-import { SceneName } from "../../../shared/types";
+import { SceneName, ServerMsg } from "../../../shared/types";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
-import { LevelController } from "../Controllers/LevelController";
+import { LevelGenerator } from "../Controllers/LevelGenerator";
 import { PlayerCamera } from "../Controllers/PlayerCamera";
 import { Entity } from "../Entities/Entity";
 import { PlayerUI } from "../Controllers/PlayerUI";
@@ -19,7 +19,7 @@ export class GameScene {
     public _ui;
     public _environment;
     public _shadow;
-    public _generator: LevelController;
+    public _map: LevelGenerator;
     public _camera: PlayerCamera;
     public room;
     public sessionId;
@@ -48,7 +48,7 @@ export class GameScene {
         light.intensity = 0.8;
 
         // generate level
-        this._generator = new LevelController(this._scene, "map_01");
+        this._map = new LevelGenerator(this._scene, "map_01");
 
         // start camera
         this._camera = new PlayerCamera(this._scene);
@@ -67,9 +67,9 @@ export class GameScene {
         this.room = this._game.joinedRoom;
         this.sessionId = this.room.sessionId;
 
-        // new player
+        // on new player
         this.room.state.players.onAdd((entity, sessionId) => {
-            console.log("ENTITY ADDED", entity);
+            console.log("[GAME] ENTITY ADDED", entity);
             let currentPlayer = sessionId === this.sessionId;
             if (currentPlayer) {
                 let player = new Entity(sessionId, this._scene, this, entity, currentPlayer);
@@ -82,8 +82,13 @@ export class GameScene {
 
         // removing player
         this.room.state.players.onRemove((entity, sessionId) => {
-            console.log("ENTITY LEFT", sessionId);
+            console.log("[GAME] ENTITY LEFT", sessionId);
             this.entities.delete(sessionId);
+        });
+
+        // start game event
+        this.room.onMessage(ServerMsg.START_GAME, (message) => {
+            console.log("message received from server", message);
         });
 
         // game loop

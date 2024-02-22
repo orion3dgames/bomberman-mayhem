@@ -1,16 +1,14 @@
-import { Schema, MapSchema, type, ArraySchema, filter } from "@colyseus/schema";
-import gameConfig from "../game.config";
-
-export class Player extends Schema {
-    @type("string") sessionId: string;
-    @type("string") displayName: string;
-    @type("boolean") ready = false;
-    @type("boolean") autoReady = false;
-    @type("boolean") disconnected = false;
-    @type("boolean") admin: boolean;
-}
+import { Schema, MapSchema, type } from "@colyseus/schema";
+import { Player } from "./Entities/Player";
 
 export class GameState extends Schema {
-    @type("string") roundState: "idle" | "dealing" | "turns" | "end" = "idle";
+    @type("string") status: "CREATED" | "PLAYING" | "ENDED" = "CREATED";
+    @type("string") map: "map_01";
     @type({ map: Player }) players = new MapSchema<Player>();
+
+    constructor(args) {
+        super();
+    }
+
+    public update(dt) {}
 }

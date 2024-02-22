@@ -12,7 +12,10 @@
         "moduleResolution": "node",
         "types": ["node"],
         "typeRoots": ["node_modules/@types"],
-        "baseUrl": "."
+        "baseUrl": ".",
+        "paths": {
+            "@shared/*": ["../shared/*"]
+        }
     },
     "include": ["src/*", "src/**/*.d.ts", "src/Utils/Utils.ts"],
     "exclude": ["node_modules", "**/*.spec.js"]

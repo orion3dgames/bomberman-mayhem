@@ -1,9 +1,12 @@
 import { Room, Client, Delayed, Protocol, ServerError } from "colyseus";
-import { GameState, Player } from "./GameState";
+import { GameState } from "./GameState";
 import gameConfig from "../game.config";
 import Logger from "../../../shared/Utils/Logger";
+import { ServerMsg } from "../../../shared/types";
+import { MapHelper } from "../../../shared/MapHelper";
 
-import { generateUserName, generateRoomId } from "../Utils/Utils";
+import { generateRoomId } from "../Utils/Utils";
+import { Player } from "./Entities/Player";
 
 export class GameRoom extends Room<GameState> {
     /** Current timeout skip reference */
@@ -14,6 +17,8 @@ export class GameRoom extends Room<GameState> {
 
     public autoDispose = true;
     private LOBBY_CHANNEL = "GameRoom";
+
+    private mapHelper: MapHelper;
 
     private log(msg: string, client?: Client | string) {
         if (process.env.ROOM_LOG_DISABLE == "true") return;
@@ -37,21 +42,27 @@ export class GameRoom extends Room<GameState> {
             this.roomId = e.roomId;
         }
 
-        console.log("Creating Room", this.roomId);
-
         //this.setPrivate();
         this.setState(new GameState({}));
         this.clock.start();
 
-        //Send ping messages to all clients
-        this.clock.setInterval(() => {
-            this.broadcast("ping");
-        }, gameConfig.pingInterval);
+        // set metadata
+        this.state.map = e.map;
 
-        // Client message listeners:
-        this.onMessage("START_GAME_REQUESTED", (client, state: boolean) => {
-            this.broadcast("START_GAME", true);
-        });
+        //
+        this.mapHelper = new MapHelper(e.map);
+
+        //
+        console.log("Creating Room", this.roomId, this.state.map);
+
+        //Send ping messages to all clients
+        //Set a simulation interval that can change the state of the game
+        this.setSimulationInterval((dt) => {
+            this.state.update(dt);
+        }, 100);
+
+        //
+        this.processMessages();
     }
 
     onAuth(client: Client, auth) {
@@ -69,14 +80,19 @@ export class GameRoom extends Room<GameState> {
     onJoin(client: Client) {
         this.log(`Join`, client);
 
-        this.state.players.set(
-            client.sessionId,
-            new Player({
-                sessionId: client.sessionId,
-                displayName: client.auth.name,
-                admin: this.state.players.size == 0,
-            })
-        );
+        // find spawnpoint
+        let spawnpoint = this.mapHelper.setSpawnPoint(client.sessionId);
+
+        let player = new Player({
+            sessionId: client.sessionId,
+            displayName: client.auth.name,
+            admin: this.state.players.size == 0,
+            x: spawnpoint.position.x,
+            y: spawnpoint.position.y,
+            z: spawnpoint.position.z,
+        });
+
+        this.state.players.set(client.sessionId, player);
     }
 
     async onLeave(client: Client, consented: boolean) {
@@ -126,5 +142,28 @@ export class GameRoom extends Room<GameState> {
             const a = [...this.state.players.values()];
             a[Math.floor(Math.random() * a.length)].admin = true;
         }
+    }
+
+    processMessages() {
+        // Client message listeners:
+        this.onMessage("*", (client, type, data) => {
+            ////////////////////////////////////
+            ////////// PLAYER EVENTS ///////////
+            ////////////////////////////////////
+            const playerState: Player = this.state.players.get(client.sessionId) as Player;
+            if (!playerState) {
+                return false;
+            }
+
+            if (type === ServerMsg.START_GAME_REQUESTED) {
+                this.lock();
+                this.broadcast(ServerMsg.START_GAME, true);
+            }
+
+            if (type === ServerMsg.PLAYER_MOVE) {
+                console.log(ServerMsg[ServerMsg.PLAYER_MOVE], data);
+                playerState.move(data);
+            }
+        });
     }
 }

@@ -4,10 +4,10 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Scene } from "@babylonjs/core/scene";
 
-import { map_01 } from "../Maps";
-import { tiles, Tile } from "../Maps/tiles";
+import { map_01 } from "../../../shared/Maps";
+import { tiles, Tile } from "../../../shared/Maps/tiles";
 
-export class LevelController {
+export class LevelGenerator {
     private _scene: Scene;
     private maps = [];
     private tiles = [];
@@ -24,13 +24,6 @@ export class LevelController {
 
         // generate level
         this.generate(map);
-
-        //
-        console.log(this.cells);
-    }
-
-    public getAvailableSpawnPoint() {
-        return this.spawnPoint[0];
     }
 
     public async generate(map: string) {
@@ -46,36 +39,20 @@ export class LevelController {
     }
 
     mesh(tile, rowId, colId) {
-        let colors = [Color3.Red(), Color3.Blue(), Color3.Black(), Color3.White()];
         let foundTile = this.tiles[tile] as Tile;
         if (foundTile) {
-            // spawn point
             if (foundTile.id == 1) {
-                this.spawnPoint.push({
-                    position: new Vector3(rowId, 0, colId),
-                });
-
-                //
                 const box = MeshBuilder.CreateBox("box", { size: foundTile.width, height: 0.1 }, this._scene);
                 box.position = new Vector3(rowId, 0, colId);
                 const material = new StandardMaterial("box-material", this._scene);
                 material.diffuseColor = Color3.White();
                 box.material = material;
             } else {
-                //
                 const box = MeshBuilder.CreateBox("box-" + rowId + "-" + colId, { size: foundTile.width, height: foundTile.height }, this._scene);
                 box.position = new Vector3(rowId, 0, colId);
                 const material = new StandardMaterial("box-material", this._scene);
-                material.diffuseColor = foundTile.color;
+                material.diffuseColor = Color3.Yellow();
                 box.material = material;
-            }
-
-            //
-            if (!foundTile.isWalkable) {
-                if (!this.cells[rowId]) {
-                    this.cells[rowId] = [];
-                }
-                this.cells[rowId][colId] = foundTile.id;
             }
         }
     }

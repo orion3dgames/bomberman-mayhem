@@ -10,11 +10,12 @@ import { Control } from "@babylonjs/gui/2D/controls/control";
 import { Button } from "@babylonjs/gui/2D/controls/button";
 
 import { GameController } from "../Controllers/GameController";
-import { SceneName } from "../../../shared/types";
+import { SceneName, ServerMsg } from "../../../shared/types";
 import { ScrollViewer } from "@babylonjs/gui/2D/controls/scrollViewers/scrollViewer";
 import { Grid } from "@babylonjs/gui/2D/controls/grid";
 import { StackPanel } from "@babylonjs/gui/2D/controls/stackPanel";
 import { Room } from "colyseus.js";
+import { Server } from "http";
 
 export class RoomScene {
     private _game: GameController;
@@ -30,6 +31,9 @@ export class RoomScene {
 
     // ui
     public playerStackPanel: StackPanel;
+
+    // calllbacks
+    public callbacksToRemove: any[] = [];
 
     constructor() {
         this._newState = SceneName.NULL;
@@ -63,21 +67,37 @@ export class RoomScene {
         if (this.room) {
             window.location.hash = this.room.roomId;
             this.sessionId = this.room.sessionId;
-            this.room.state.players.onAdd((entity, sessionId) => {
-                console.log("PLAYER ADDED", entity);
+            let evtOnAdd = this.room.state.players.onAdd((entity, sessionId) => {
+                console.log("[ROOM] PLAYER ADDED", entity);
                 this.players.set(sessionId, entity);
                 this.refreshUI();
             });
-            this.room.state.players.onRemove((entity, sessionId) => {
-                console.log("PLAYER LEFT", sessionId);
+            let evtOnRemove = this.room.state.players.onRemove((entity, sessionId) => {
+                console.log("[ROOM] PLAYER LEFT", sessionId);
                 this.players.delete(sessionId);
                 this.refreshUI();
+            });
+            this.callbacksToRemove.push(evtOnAdd);
+            this.callbacksToRemove.push(evtOnRemove);
+
+            // start game event
+            this.room.onMessage(ServerMsg.START_GAME, (message) => {
+                console.log("message received from server", message);
+
+                // remove any messages events
+                this.room.removeAllListeners();
+
+                // remove onAdd and onRemove callbacks
+                this.callbacksToRemove.forEach((callback) => callback());
+
+                // go to game scene
+                this._game.setScene(SceneName.GAME);
             });
         }
     }
 
     refreshUI() {
-        console.log("REFRESH UI", this.playerStackPanel.children.length);
+        console.log("[ROOM] REFRESH UI", this.playerStackPanel.children.length);
 
         // if already exists
         this.playerStackPanel.getDescendants().forEach((el) => {
@@ -217,8 +237,7 @@ export class RoomScene {
         subGrid.addControl(createBtn, 7);
 
         createBtn.onPointerUpObservable.add(() => {
-            this.room.removeAllListeners();
-            this._game.setScene(SceneName.GAME);
+            this.room.send(ServerMsg.START_GAME_REQUESTED);
         });
 
         // load scene

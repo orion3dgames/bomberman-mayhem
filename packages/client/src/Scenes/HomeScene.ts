@@ -77,7 +77,7 @@ export class HomeScene {
                 const roomIndex = this.allRooms.findIndex((room) => room.roomId === roomId);
                 if (roomIndex !== -1) {
                     this.allRooms[roomIndex] = room;
-                    console.log("UPDATE ROOM", room.roomId);
+                    console.log("UPDATE ROOM", room.roomId, room.status);
                 } else {
                     this.allRooms.push(room);
                     console.log("NEW ROOM", room.roomId);
@@ -94,7 +94,7 @@ export class HomeScene {
     }
 
     loadRooms() {
-        console.log("REFRESH UI", this.lobbyStackPanel.children.length);
+        console.log("[LOBBY] REFRESH UI", this.lobbyStackPanel.children.length);
 
         // if already exists
         this.lobbyStackPanel.getDescendants().forEach((el) => {

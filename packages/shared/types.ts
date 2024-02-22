@@ -43,4 +43,7 @@ export type User = {
 export enum ServerMsg {
     PING = 1,
     PONG,
+    START_GAME,
+    START_GAME_REQUESTED,
+    PLAYER_MOVE,
 }
