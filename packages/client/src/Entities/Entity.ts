@@ -11,6 +11,7 @@ import { Engine } from "@babylonjs/core/Engines/engine";
 import { GameScene } from "../Scenes/GameScene";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
+import { MoveController } from "./Entity/MoveController";
 
 export class Entity extends TransformNode {
     public _camera: PlayerCamera;
@@ -25,6 +26,8 @@ export class Entity extends TransformNode {
     public isCurrentPlayer;
 
     public characterLabel;
+
+    public moveController: MoveController;
 
     public sessionId: string = "";
     public name: string = "";
@@ -59,11 +62,24 @@ export class Entity extends TransformNode {
         // spawn player
         this.spawn();
 
+        // move controller
+        this.moveController = new MoveController(this);
+
+        // set default position
+        this.moveController.setPositionAndRotation(entity); // set next default position from server entity
+
         // update from server
         this._entity.onChange(() => {
-            console.log("[CHANGE FROM SERVER]", this._entity);
             // update player data from server data
             Object.assign(this, this._entity);
+
+            // update player position
+            this.moveController.setPositionAndRotation(this._entity);
+
+            // do server reconciliation on client if current player only & not blocked
+            if (this.isCurrentPlayer) {
+                this.moveController.reconcileMove(this._entity.sequence); // set default entity position
+            }
         });
 
         // show entoty label
@@ -83,7 +99,10 @@ export class Entity extends TransformNode {
     }
 
     public update(delta: number) {
-        this.move();
+        // tween entity
+        if (this && this.moveController) {
+            this.moveController.tween();
+        }
 
         // only for current player
         if (this.isCurrentPlayer) {
@@ -91,31 +110,10 @@ export class Entity extends TransformNode {
         }
     }
 
-    public updateServerRate(delta: number) {}
-
-    public move() {
-        //
-        this.position = new Vector3(this.x, 0, this.z);
-
-        /*
-        if (this._input.player_can_move) {
-            let speed = 0.1;
-            let oldX = this.playerMesh.position.x;
-            let oldZ = this.playerMesh.position.z;
-
-            let x = oldX - this._input.horizontal * speed;
-            let z = oldZ - this._input.vertical * speed;
-
-            // check if allowed
-            let nextPositionKey = x + "," + z;
-            if (!this._generator.walkableArea[nextPositionKey]) {
-                console.log("Movement not allowed", x, z);
-                //return false;
-            }
-
-            //
-            this.playerMesh.position = new Vector3(x, 0, z);
-            console.log(x, z);
-        }*/
+    public updateServerRate() {
+        // process player movement
+        if (this.isCurrentPlayer) {
+            this.moveController.processMove();
+        }
     }
 }

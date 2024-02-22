@@ -47,3 +47,9 @@ export enum ServerMsg {
     START_GAME_REQUESTED,
     PLAYER_MOVE,
 }
+
+export type PlayerInputs = {
+    seq: number;
+    h: number;
+    v: number;
+};

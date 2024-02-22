@@ -6,23 +6,30 @@ export class Player extends Schema {
     @type("boolean") ready = false;
     @type("boolean") autoReady = false;
     @type("boolean") disconnected = false;
-    @type("boolean") admin: boolean;
-    @type("int16") x: number;
-    @type("int16") y: number;
-    @type("int16") z: number;
+    @type("boolean") admin: boolean = false;
+    @type("int16") x: number = 0;
+    @type("int16") y: number = 0;
+    @type("int16") z: number = 0;
+    @type("int16") sequence: number = 0;
 
     constructor(args) {
         super();
 
         // add spawn data
         Object.assign(this, args);
-
-        console.log("ASSIGNING DATA TO PLAYER", this);
     }
 
-    move(moveData) {
-        console.log(moveData);
-        this.x += moveData.h;
-        this.z += moveData.v;
+    move(playerInput) {
+        console.log(playerInput);
+
+        let speed = 1;
+        let newX = this.x - playerInput.h * speed;
+        let newY = 0;
+        let newZ = this.z - playerInput.v * speed;
+
+        this.x = newX;
+        this.y = newY;
+        this.z = newZ;
+        this.sequence = playerInput.seq;
     }
 }

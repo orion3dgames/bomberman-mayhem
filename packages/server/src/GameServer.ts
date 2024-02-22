@@ -50,7 +50,7 @@ export default class GameServer {
         });
 
         // simulate 200ms latency between server and client.
-        gameServer.simulateLatency(300);
+        gameServer.simulateLatency(0);
 
         // server staic files
         app.use(express.static(indexPath));
