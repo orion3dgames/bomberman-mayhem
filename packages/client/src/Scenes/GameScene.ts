@@ -4,6 +4,7 @@ import { Color4 } from "@babylonjs/core/Maths/math.color";
 
 import { GameController } from "../Controllers/GameController";
 import { SceneName, ServerMsg } from "../../../shared/types";
+import { MapHelper } from "../../../shared/MapHelper";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 import { LevelGenerator } from "../Controllers/LevelGenerator";
@@ -19,7 +20,8 @@ export class GameScene {
     public _ui;
     public _environment;
     public _shadow;
-    public _map: LevelGenerator;
+    public _map: MapHelper;
+    public _generator: LevelGenerator;
     public _camera: PlayerCamera;
     public room;
     public sessionId;
@@ -48,7 +50,9 @@ export class GameScene {
         light.intensity = 0.8;
 
         // generate level
-        this._map = new LevelGenerator(this._scene, "map_01");
+        let chosenMap = "map_01";
+        this._map = new MapHelper(chosenMap);
+        this._generator = new LevelGenerator(this._scene, this._map);
 
         // start camera
         this._camera = new PlayerCamera(this._scene);

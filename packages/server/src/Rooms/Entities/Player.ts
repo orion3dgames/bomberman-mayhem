@@ -1,4 +1,5 @@
-import { Schema, MapSchema, type } from "@colyseus/schema";
+import { Schema, type } from "@colyseus/schema";
+import { GameRoom } from "../GameRoom";
 
 export class Player extends Schema {
     @type("string") sessionId: string;
@@ -12,8 +13,12 @@ export class Player extends Schema {
     @type("int16") z: number = 0;
     @type("int16") sequence: number = 0;
 
-    constructor(args) {
+    public room: GameRoom;
+
+    constructor(args, room: GameRoom) {
         super();
+
+        this.room = room;
 
         // add spawn data
         Object.assign(this, args);
@@ -27,9 +32,12 @@ export class Player extends Schema {
         let newY = 0;
         let newZ = this.z - playerInput.v * speed;
 
-        this.x = newX;
-        this.y = newY;
-        this.z = newZ;
-        this.sequence = playerInput.seq;
+        // check if next position is within allowed cells
+        if (this.room.mapHelper.isTileAvailable(newX, newZ)) {
+            this.x = newX;
+            this.y = newY;
+            this.z = newZ;
+            this.sequence = playerInput.seq;
+        }
     }
 }

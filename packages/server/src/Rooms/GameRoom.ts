@@ -18,7 +18,7 @@ export class GameRoom extends Room<GameState> {
     public autoDispose = true;
     private LOBBY_CHANNEL = "GameRoom";
 
-    private mapHelper: MapHelper;
+    public mapHelper: MapHelper;
 
     private log(msg: string, client?: Client | string) {
         if (process.env.ROOM_LOG_DISABLE == "true") return;
@@ -84,14 +84,17 @@ export class GameRoom extends Room<GameState> {
         let spawnpoint = this.mapHelper.setSpawnPoint(client.sessionId);
         console.log(spawnpoint);
 
-        let player = new Player({
-            sessionId: client.sessionId,
-            name: client.auth.name,
-            admin: this.state.players.size == 0,
-            x: spawnpoint.position.x,
-            y: spawnpoint.position.y,
-            z: spawnpoint.position.z,
-        });
+        let player = new Player(
+            {
+                sessionId: client.sessionId,
+                name: client.auth.name,
+                admin: this.state.players.size == 0,
+                x: spawnpoint.position.x,
+                y: spawnpoint.position.y,
+                z: spawnpoint.position.z,
+            },
+            this
+        );
 
         this.state.players.set(client.sessionId, player);
     }

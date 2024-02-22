@@ -12,11 +12,12 @@ import { GameScene } from "../Scenes/GameScene";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { MoveController } from "./Entity/MoveController";
+import { MapHelper } from "../../../shared/MapHelper";
 
 export class Entity extends TransformNode {
     public _camera: PlayerCamera;
     public _engine: Engine;
-    public _map: LevelGenerator;
+    public _map: MapHelper;
     public _input: PlayerInput;
     public _game;
     public _entity;

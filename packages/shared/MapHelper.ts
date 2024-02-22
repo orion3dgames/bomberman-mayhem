@@ -8,7 +8,7 @@ export class MapHelper {
 
     // spawn points
     public spawnPoints: any = [];
-    public walkableTiles: any = [];
+    public unwalkableTiles: any = [];
 
     constructor(mapName: string = "map_01") {
         // get map data
@@ -32,7 +32,13 @@ export class MapHelper {
     }
 
     public isTileAvailable(row, col) {
-        return this.walkableTiles[row][col];
+        console.log("CHECKING", row, col);
+        if (!this.unwalkableTiles[row][col]) {
+            console.log("IS WALKABLE", row, col);
+            return true;
+        }
+        console.log("IS NOT WALKABLE", row, col);
+        return false;
     }
 
     /////////////////
@@ -68,10 +74,10 @@ export class MapHelper {
 
         // is walkable tiles
         if (!foundTile.isWalkable) {
-            if (!this.walkableTiles[rowId]) {
-                this.walkableTiles[rowId] = [];
+            if (!this.unwalkableTiles[rowId]) {
+                this.unwalkableTiles[rowId] = [];
             }
-            this.walkableTiles[rowId][colId] = foundTile.id;
+            this.unwalkableTiles[rowId][colId] = foundTile.id;
         }
     }
 

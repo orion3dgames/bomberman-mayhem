@@ -4,7 +4,7 @@ import { Entity } from "../Entity";
 import { PlayerInput } from "../../Controllers/PlayerInput";
 
 export class MoveController {
-    private _player;
+    private _player: Entity;
     private _mesh;
     private speed;
     private _input: PlayerInput;
@@ -113,8 +113,10 @@ export class MoveController {
 
         // check it fits in navmesh
         if (this.isCurrentPlayer) {
-            this.nextPosition.x = newX;
-            this.nextPosition.z = newZ;
+            if (this._player._map.isTileAvailable(newX, newZ)) {
+                this.nextPosition.x = newX;
+                this.nextPosition.z = newZ;
+            }
         }
     }
 }

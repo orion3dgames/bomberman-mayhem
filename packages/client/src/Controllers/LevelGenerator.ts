@@ -3,33 +3,24 @@ import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Scene } from "@babylonjs/core/scene";
-
-import { map_01 } from "../../../shared/Maps";
-import { tiles, Tile } from "../../../shared/Maps/tiles";
+import { MapHelper } from "../../../shared/MapHelper";
+import { Tile } from "../../../shared/Maps/tiles";
 
 export class LevelGenerator {
     private _scene: Scene;
-    private maps = [];
-    private tiles = [];
-    public spawnPoint: any = [];
-    public cells: any = [];
+    private _map: MapHelper;
 
-    constructor(scene: Scene, map: string = "map_01") {
+    constructor(scene: Scene, map: MapHelper) {
         //
         this._scene = scene;
-
-        //
-        this.maps["map_01"] = map_01;
-        this.tiles = tiles;
+        this._map = map;
 
         // generate level
-        this.generate(map);
+        this.generate(this._map.mapData);
     }
 
     public async generate(map: string) {
-        let mapArray = this.maps[map] ?? [];
-        console.log("[GENERATOR] map to be generated: ", this.maps[map]);
-        mapArray.forEach((row, rowId) => {
+        this._map.mapData.forEach((row, rowId) => {
             row.forEach((col, colId) => {
                 col.forEach((subcol, subcolId) => {
                     this.mesh(subcol, rowId, colId);
@@ -39,7 +30,7 @@ export class LevelGenerator {
     }
 
     mesh(tile, rowId, colId) {
-        let foundTile = this.tiles[tile] as Tile;
+        let foundTile = this._map.tiles[tile] as Tile;
         if (foundTile) {
             if (foundTile.id == 1) {
                 const box = MeshBuilder.CreateBox("box", { size: foundTile.width, height: 0.1 }, this._scene);
