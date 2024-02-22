@@ -97,7 +97,7 @@ export class MoveController {
 
     public tween() {
         // continuously lerp between current position and next position
-        this._player.position = Vector3.Lerp(this._player.position, this.nextPosition, 0.4);
+        this._player.position = Vector3.Lerp(this._player.position, this.nextPosition, 0.5);
     }
 
     public move(playerInput: PlayerInputs): void {

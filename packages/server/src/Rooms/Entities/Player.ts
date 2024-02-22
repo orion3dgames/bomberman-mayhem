@@ -2,7 +2,7 @@ import { Schema, MapSchema, type } from "@colyseus/schema";
 
 export class Player extends Schema {
     @type("string") sessionId: string;
-    @type("string") displayName: string;
+    @type("string") name: string;
     @type("boolean") ready = false;
     @type("boolean") autoReady = false;
     @type("boolean") disconnected = false;

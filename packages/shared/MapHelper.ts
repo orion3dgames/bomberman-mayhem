@@ -21,16 +21,14 @@ export class MapHelper {
         this.generate(mapName);
     }
 
-    public setSpawnPoint(player) {
-        let found;
-        this.spawnPoints.forEach((element) => {
-            if (!element.player) {
-                element.player = player.sessionId;
-                found = element;
+    public setSpawnPoint(sessionId) {
+        for (var i = 0; i < this.spawnPoints.length; i++) {
+            let spawn = this.spawnPoints[i];
+            if (!spawn.player) {
+                this.spawnPoints[i].player = sessionId;
+                return spawn;
             }
-        });
-        console.log(this.spawnPoints);
-        return found;
+        }
     }
 
     public isTileAvailable(row, col) {

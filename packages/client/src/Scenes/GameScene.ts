@@ -83,6 +83,7 @@ export class GameScene {
         // removing player
         this.room.state.players.onRemove((entity, sessionId) => {
             console.log("[GAME] ENTITY LEFT", sessionId);
+
             this.entities.delete(sessionId);
         });
 
@@ -103,7 +104,7 @@ export class GameScene {
             });
 
             // server update rate
-            let rate = 200;
+            let rate = 100;
             let timePassed = (timeNow - timeServer) / 1000;
             let updateRate = rate / 1000; // game is networked update every 100ms
             if (timePassed >= updateRate) {

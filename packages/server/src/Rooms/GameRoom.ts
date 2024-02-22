@@ -82,10 +82,11 @@ export class GameRoom extends Room<GameState> {
 
         // find spawnpoint
         let spawnpoint = this.mapHelper.setSpawnPoint(client.sessionId);
+        console.log(spawnpoint);
 
         let player = new Player({
             sessionId: client.sessionId,
-            displayName: client.auth.name,
+            name: client.auth.name,
             admin: this.state.players.size == 0,
             x: spawnpoint.position.x,
             y: spawnpoint.position.y,
