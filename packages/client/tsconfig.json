@@ -3,7 +3,7 @@
     "compilerOptions": {
         "target": "ESNext",
         "module": "CommonJS",
-        "sourceMap": false,
+        "sourceMap": true,
         "outDir": "./dist/server",
         "strict": false,
         "experimentalDecorators": true,

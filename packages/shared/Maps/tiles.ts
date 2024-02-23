@@ -1,38 +1,40 @@
-type Tile = {
-    id: number;
-    name: string;
-    width: number;
-    height: number;
-    isWalkable?: boolean;
-};
+/**
+ * https://stmn.github.io/ascii-map-editor/#
+ * Use the id's below to generate the map
+ */
 
-const tiles: Tile[] = [
-    {
-        id: 0,
+import { ITiles } from "../types";
+
+const tiles: ITiles = {
+    " ": {
+        id: " ",
         name: "ground",
         width: 1,
         height: 0.1,
         isWalkable: true,
+        offset_y: -0.1,
     },
-    {
-        id: 1,
-        name: "spawn",
+    S: {
+        id: "S",
+        name: "spawnpoint",
         width: 1,
         height: 1,
         isWalkable: true,
+        offset_y: -0.1,
     },
-    {
-        id: 2,
+    B: {
+        id: "B",
+        name: "breakable_wall",
+        width: 1,
+        height: 1,
+    },
+    W: {
+        id: "W",
         name: "wall",
         width: 1,
         height: 1,
+        offset_y: 0,
     },
-    {
-        id: 3,
-        name: "bomb",
-        width: 1,
-        height: 1,
-    },
-];
+};
 
-export { tiles, Tile };
+export { tiles };

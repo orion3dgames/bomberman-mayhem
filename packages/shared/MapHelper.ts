@@ -1,10 +1,11 @@
 import { map_01, map_02 } from "./Maps";
-import { tiles, Tile } from "./Maps/tiles";
+import { tiles } from "./Maps/tiles";
+import { ITiles, Tile } from "./types";
 
 export class MapHelper {
     //
     public mapData;
-    public tiles: Tile[] = [];
+    public tiles: ITiles = {};
 
     // spawn points
     public spawnPoints: any = [];
@@ -21,6 +22,11 @@ export class MapHelper {
         this.generate(mapName);
     }
 
+    /**
+     * Find a free spawn point for player
+     * @param sessionId
+     * @returns
+     */
     public setSpawnPoint(sessionId) {
         for (var i = 0; i < this.spawnPoints.length; i++) {
             let spawn = this.spawnPoints[i];
@@ -31,37 +37,37 @@ export class MapHelper {
         }
     }
 
-    public isTileAvailable(row, col) {
-        console.log("CHECKING", row, col);
+    /**
+     * Check if tile (row, col) is free
+     * @param row
+     * @param col
+     * @returns boolean
+     */
+    public isTileAvailable(row, col): boolean {
         if (!this.unwalkableTiles[row][col]) {
-            console.log("IS WALKABLE", row, col);
             return true;
         }
-        console.log("IS NOT WALKABLE", row, col);
         return false;
     }
 
-    /////////////////
-
-    private async generate(map: string) {
-        this.mapData.forEach((row, rowId) => {
-            row.forEach((col, colId) => {
-                col.forEach((subcol, subcolId) => {
-                    this.processTile(subcol, rowId, colId);
-                });
+    public async generate(map: string) {
+        this.mapData.forEach((col, colId) => {
+            col.forEach((tileID, rowId) => {
+                this.processTile(tileID, colId, rowId);
             });
         });
     }
 
-    private processTile(subcol, rowId, colId) {
-        // find tile
-        let foundTile = this.tiles[subcol] as Tile;
+    private processTile(tileID, colId, rowId) {
+        // get tile details
+        let foundTile = this.tiles[tileID] as Tile;
 
         // tile not found
-        if (!foundTile) console.error("Tile: " + subcol + " does not exist, map data is corrupted");
+        if (!foundTile) console.error("Tile: " + tileID + " does not exist, map data is corrupted");
 
         // spawnpoint tiles
-        if (foundTile.id == 1) {
+        if (foundTile.id == "S") {
+            console.log(foundTile);
             this.spawnPoints.push({
                 player: false,
                 position: {

@@ -11,6 +11,7 @@ export class Player extends Schema {
     @type("int16") x: number = 0;
     @type("int16") y: number = 0;
     @type("int16") z: number = 0;
+    @type("float32") rot: number = 0;
     @type("int16") sequence: number = 0;
 
     public room: GameRoom;
@@ -32,11 +33,14 @@ export class Player extends Schema {
         let newY = 0;
         let newZ = this.z - playerInput.v * speed;
 
+        const newRotY = Math.atan2(playerInput.h, playerInput.v);
+
         // check if next position is within allowed cells
         if (this.room.mapHelper.isTileAvailable(newX, newZ)) {
             this.x = newX;
             this.y = newY;
             this.z = newZ;
+            this.rot = this.rot + (newRotY - this.rot);
             this.sequence = playerInput.seq;
         }
     }

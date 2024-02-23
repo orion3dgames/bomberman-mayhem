@@ -22,6 +22,7 @@ export class Entity extends TransformNode {
     public _game;
     public _entity;
     public _room;
+    public _shadow;
     public _ui: PlayerUI;
     public playerMesh: Mesh;
     public isCurrentPlayer;
@@ -46,6 +47,7 @@ export class Entity extends TransformNode {
         this._room = gameScene.room;
         this._game = gameScene._game;
         this._ui = gameScene._ui;
+        this._shadow = gameScene._shadow;
         this._entity = entity;
         this.isCurrentPlayer = isCurrentPlayer;
 
@@ -88,15 +90,26 @@ export class Entity extends TransformNode {
     }
 
     public spawn() {
-        let colors = [Color3.Red(), Color3.Blue(), Color3.Black(), Color3.White()];
-        this.position = new Vector3(this.x, this.y, this.z);
-
+        // square
+        let boxSize = 0.7;
         const box = MeshBuilder.CreateBox("box", { size: 0.7 }, this._scene);
+        box.position = new Vector3(0, boxSize / 2, 0);
         const material = new StandardMaterial("box-material", this._scene);
         material.diffuseColor = Color3.Red();
         box.material = material;
         box.parent = this;
         this.playerMesh = box;
+
+        // circle
+        const sphere = MeshBuilder.CreateSphere("spere", { diameter: 0.7, segments: 4 }, this._scene);
+        const sphere_material = new StandardMaterial("sphere-material", this._scene);
+        sphere_material.diffuseColor = Color3.Red();
+        sphere.material = material;
+        sphere.parent = box;
+        sphere.position = new Vector3(0, 0, -0.2);
+
+        // add player shadow
+        this._shadow.addShadowCaster(box);
     }
 
     public update(delta: number) {

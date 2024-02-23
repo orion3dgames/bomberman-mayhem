@@ -11,6 +11,9 @@ Building a basic multiplayer bomberman type game using babylon.js and colyseus
 ## Current Progress
 - Basic framework is in place (21-02-2024)
 
+## ASCII Map Maker
+I use https://stmn.github.io/ascii-map-editor/ to generate all the maps.
+
 ## Requirements
 - Download and install [Node.js LTS](https://nodejs.org/en/download/)
 - Clone or download this repository.

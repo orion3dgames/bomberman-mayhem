@@ -11,6 +11,11 @@ import { LevelGenerator } from "../Controllers/LevelGenerator";
 import { PlayerCamera } from "../Controllers/PlayerCamera";
 import { Entity } from "../Entities/Entity";
 import { PlayerUI } from "../Controllers/PlayerUI";
+import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
+import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
+import { SpotLight } from "@babylonjs/core/Lights/spotLight";
+import { RenderTargetTexture } from "@babylonjs/core/Materials/Textures/renderTargetTexture";
+import { SSAO2RenderingPipeline } from "@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/ssao2RenderingPipeline";
 
 export class GameScene {
     public _game: GameController;
@@ -19,7 +24,7 @@ export class GameScene {
     public _newState: SceneName;
     public _ui;
     public _environment;
-    public _shadow;
+    public _shadow: ShadowGenerator;
     public _map: MapHelper;
     public _generator: LevelGenerator;
     public _camera: PlayerCamera;
@@ -45,14 +50,26 @@ export class GameScene {
         // set sky color
         this._scene.clearColor = new Color4(0.1, 0.1, 0.1, 1);
 
-        // set lightsa
-        let light = new HemisphericLight("light", Vector3.Up(), this._scene);
-        light.intensity = 0.8;
+        // This creates directional light with shdaows
+        var light = new DirectionalLight("dir01", new Vector3(-0.25, -1, -0.25), scene);
+        light.position = new Vector3(20, 40, 20);
+        light.shadowEnabled = true;
+
+        // Shadows
+        var shadowGenerator = new ShadowGenerator(1024, light);
+        shadowGenerator.filter = ShadowGenerator.FILTER_PCF;
+        shadowGenerator.filteringQuality = ShadowGenerator.QUALITY_HIGH;
+        shadowGenerator.darkness = 0.3;
+        this._shadow = shadowGenerator;
+
+        // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+        var ambient = new HemisphericLight("ambient1", new Vector3(0, 1, 0), scene);
+        ambient.intensity = 0.5;
 
         // generate level
         let chosenMap = "map_01";
         this._map = new MapHelper(chosenMap);
-        this._generator = new LevelGenerator(this._scene, this._map);
+        this._generator = new LevelGenerator(this._scene, this._map, shadowGenerator);
 
         // start camera
         this._camera = new PlayerCamera(this._scene);

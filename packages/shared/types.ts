@@ -13,8 +13,17 @@ interface ITileItem {
     isEnemy: boolean;
 }
 
-interface ITileKeys {
-    [key: string]: ITileItem;
+export type Tile = {
+    id: string;
+    name: string;
+    width: number;
+    height: number;
+    isWalkable?: boolean;
+    offset_y?: number; // vertical offset
+};
+
+export interface ITiles {
+    [key: string]: Tile;
 }
 
 ///////////////////////////////

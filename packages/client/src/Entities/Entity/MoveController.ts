@@ -38,6 +38,7 @@ export class MoveController {
     public setPositionAndRotation(entity): void {
         this.nextPosition = new Vector3(entity.x, entity.y, entity.z);
         this.nextRotation = new Vector3(0, entity.rot, 0);
+        console.log();
     }
 
     // server Reconciliation. Re-apply all the inputs not yet processed by the server
@@ -98,24 +99,27 @@ export class MoveController {
     public tween() {
         // continuously lerp between current position and next position
         this._player.position = Vector3.Lerp(this._player.position, this.nextPosition, 0.5);
+        this._player.playerMesh.rotation = this.nextRotation;
     }
 
     public move(playerInput: PlayerInputs): void {
-        // save current position
-        let oldX = this.nextPosition.x;
-        let oldY = this.nextPosition.y;
-        let oldZ = this.nextPosition.z;
-
-        let speed = 1;
-        let newX = oldX - playerInput.h * speed;
-        let newY = 0;
-        let newZ = oldZ - playerInput.v * speed;
-
-        // check it fits in navmesh
         if (this.isCurrentPlayer) {
+            // save current position
+            let oldX = this.nextPosition.x;
+            let oldY = this.nextPosition.y;
+            let oldZ = this.nextPosition.z;
+            const newRotY = Math.atan2(playerInput.h, playerInput.v);
+
+            let speed = 1;
+            let newX = oldX - playerInput.h * speed;
+            let newY = 0;
+            let newZ = oldZ - playerInput.v * speed;
+
+            // check it fits in navmesh
             if (this._player._map.isTileAvailable(newX, newZ)) {
                 this.nextPosition.x = newX;
                 this.nextPosition.z = newZ;
+                this.nextRotation.y = this.nextRotation.y + (newRotY - this.nextRotation.y);
             }
         }
     }
