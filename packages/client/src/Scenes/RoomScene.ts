@@ -31,6 +31,7 @@ export class RoomScene {
 
     // ui
     public playerStackPanel: StackPanel;
+    public mapStackPanel: StackPanel;
 
     // calllbacks
     public callbacksToRemove: any[] = [];
@@ -70,12 +71,12 @@ export class RoomScene {
             let evtOnAdd = this.room.state.players.onAdd((entity, sessionId) => {
                 console.log("[ROOM] PLAYER ADDED", entity);
                 this.players.set(sessionId, entity);
-                this.refreshUI();
+                this.updatePlayers();
             });
             let evtOnRemove = this.room.state.players.onRemove((entity, sessionId) => {
                 console.log("[ROOM] PLAYER LEFT", sessionId);
                 this.players.delete(sessionId);
-                this.refreshUI();
+                this.updatePlayers();
             });
             this.callbacksToRemove.push(evtOnAdd);
             this.callbacksToRemove.push(evtOnRemove);
@@ -96,8 +97,8 @@ export class RoomScene {
         }
     }
 
-    refreshUI() {
-        console.log("[ROOM] REFRESH UI", this.playerStackPanel.children.length);
+    updatePlayers() {
+        console.log("[ROOM] REFRESH PLAYER PANEL", this.playerStackPanel.children.length);
 
         // if already exists
         this.playerStackPanel.getDescendants().forEach((el) => {
@@ -158,6 +159,48 @@ export class RoomScene {
         }
     }
 
+    updateMaps() {
+        console.log("[ROOM] REFRESH MAP PANEL");
+
+        // if already exists
+        this.mapStackPanel.getDescendants().forEach((el) => {
+            el.dispose();
+        });
+
+        // add title
+        const textGame = new TextBlock("mapTitle");
+        textGame.width = 1;
+        textGame.height = "20px";
+        textGame.text = "Choose Map";
+        textGame.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        textGame.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        textGame.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        textGame.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        this.mapStackPanel.addControl(textGame);
+
+        // add maps
+        for (let makKey in this._game.maps) {
+            let map = this._game.maps[makKey];
+
+            let background = this._game.selectedMap && this._game.selectedMap.key == map.key ? "green" : "white";
+
+            const mapBtn = Button.CreateSimpleButton("mapBtn" + makKey, map.name);
+            mapBtn.width = 1;
+            mapBtn.height = "30px";
+            mapBtn.color = "black";
+            mapBtn.background = background;
+            mapBtn.thickness = 1;
+            mapBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+            mapBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+            this.mapStackPanel.addControl(mapBtn);
+
+            mapBtn.onPointerUpObservable.add(() => {
+                this._game.selectedMap = map;
+                this.updateMaps();
+            });
+        }
+    }
+
     create(guiMenu) {
         let padding = 15;
 
@@ -182,16 +225,25 @@ export class RoomScene {
         const subGrid = new Grid();
         subGrid.addRowDefinition(padding, true);
         subGrid.addColumnDefinition(1);
+
         subGrid.addRowDefinition(30, true); // HEADER CANCEL BUTTON
         subGrid.addRowDefinition(padding, true);
+
         subGrid.addRowDefinition(30, true); // HEADER TITLE
         subGrid.addRowDefinition(padding, true);
+
+        subGrid.addRowDefinition(120, true); // MAPS SECTION
+        subGrid.addRowDefinition(padding, true);
+
         subGrid.addRowDefinition(1); // MAIN CONTENT
         subGrid.addRowDefinition(padding, true);
+
         subGrid.addRowDefinition(60, true); // CREATE BUTTON
         subGrid.addRowDefinition(padding, true);
+
         columnRect.addControl(subGrid);
 
+        // 1
         const cancelButton = Button.CreateSimpleButton("cancelButton", "CANCEL");
         cancelButton.width = 1;
         cancelButton.height = "30px";
@@ -207,7 +259,9 @@ export class RoomScene {
             this._game.setScene(SceneName.HOME);
         });
 
-        //
+        // 2 padding
+
+        // 3
         const subHeaderGrid = new Rectangle();
         subHeaderGrid.background = "white";
         subHeaderGrid.thickness = 0;
@@ -219,11 +273,46 @@ export class RoomScene {
         titleGame.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         subHeaderGrid.addControl(titleGame);
 
-        //
+        // 4 padding
+
+        ///////////// MAPS
+        // 5
+        const mapBloc = new Rectangle();
+        mapBloc.background = "white";
+        mapBloc.thickness = 0;
+        subGrid.addControl(mapBloc, 5);
+
+        // add scrollable container
+        const mapScrollViewer = new ScrollViewer("mapScrollViewer");
+        mapScrollViewer.width = 1;
+        mapScrollViewer.height = 1;
+        mapScrollViewer.top = "0px";
+        mapScrollViewer.thickness = 0;
+        mapScrollViewer.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        mapScrollViewer.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+        mapBloc.addControl(mapScrollViewer);
+
+        // add stack panel
+        const mapStackPanel = new StackPanel("mapStackPanel");
+        mapStackPanel.width = "100%";
+        mapStackPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        mapStackPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+        mapStackPanel.paddingTop = "5px;";
+        mapStackPanel.spacing = 5;
+        mapStackPanel.setPadding(padding, padding, padding, padding);
+        mapScrollViewer.addControl(mapStackPanel);
+        this.mapStackPanel = mapStackPanel;
+
+        this.updateMaps();
+
+        // 6 padding
+
+        ///////////// PLAYERS
+        // 7
         const subMainGrid = new Rectangle();
         subMainGrid.background = "white";
         subMainGrid.thickness = 0;
-        subGrid.addControl(subMainGrid, 5);
+        subGrid.addControl(subMainGrid, 7);
 
         // add scrollable container
         const chatScrollViewer = new ScrollViewer("chatScrollViewer");
@@ -246,6 +335,9 @@ export class RoomScene {
         chatScrollViewer.addControl(playerStackPanel);
         this.playerStackPanel = playerStackPanel;
 
+        // 8
+
+        // 9
         const createBtn = Button.CreateSimpleButton("back", "START");
         createBtn.width = 1;
         createBtn.height = "60px";
@@ -253,7 +345,7 @@ export class RoomScene {
         createBtn.thickness = 1;
         createBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         createBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-        subGrid.addControl(createBtn, 7);
+        subGrid.addControl(createBtn, 9);
 
         ///////
         createBtn.onPointerUpObservable.add(() => {
