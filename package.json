@@ -9,6 +9,7 @@
     "main": "./dist/client/index.html",
     "scripts": {
         "server-dev": "yarn workspace bomberman-mayhem-server dev",
+        "server-start": "yarn workspace bomberman-mayhem-server dev",
         "client-dev": "yarn workspace bomberman-mayhem-client dev",
         "client-build": "yarn workspace bomberman-mayhem-client build"
     },

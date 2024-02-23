@@ -107,6 +107,7 @@ export class LevelGenerator {
                 instance.position = new Vector3(posX, offset_y, posZ);
                 instance.metadata = tile;
                 instance.receiveShadows = true;
+                instance.freezeWorldMatrix();
                 this.instances.push(instance);
             }
 
@@ -115,6 +116,7 @@ export class LevelGenerator {
                 let instance = this.assets[tile.name].createInstance("box-" + rowId + "-" + colId);
                 instance.position = new Vector3(posX, offset_y, posZ);
                 instance.metadata = tile;
+                instance.freezeWorldMatrix();
                 this._shadow.addShadowCaster(instance, true);
                 this.instances.push(instance);
             }

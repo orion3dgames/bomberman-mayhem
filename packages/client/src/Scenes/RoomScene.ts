@@ -15,7 +15,7 @@ import { ScrollViewer } from "@babylonjs/gui/2D/controls/scrollViewers/scrollVie
 import { Grid } from "@babylonjs/gui/2D/controls/grid";
 import { StackPanel } from "@babylonjs/gui/2D/controls/stackPanel";
 import { Room } from "colyseus.js";
-import { Server } from "http";
+import { MenuOptions } from "../Utils/MenuOptions";
 
 export class RoomScene {
     private _game: GameController;
@@ -133,10 +133,29 @@ export class RoomScene {
             // middle columm
             const textGame = new TextBlock("textGame" + player.sessionId);
             textGame.width = 1;
-            textGame.text = player.displayName;
+            textGame.text = player.name;
             textGame.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
             blocGame.addControl(textGame);
         });
+
+        // showing available players slot
+        for (let i = 0; i < 4 - this.players.size; i++) {
+            // rect
+            const blocGame = new Rectangle("blocGame" + i);
+            blocGame.width = 1;
+            blocGame.height = "50px;";
+            blocGame.background = "lightgray";
+            blocGame.thickness = 0;
+            blocGame.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+            this.playerStackPanel.addControl(blocGame);
+
+            // middle columm
+            const textGame = new TextBlock("textGame" + i);
+            textGame.width = 1;
+            textGame.text = "WAITING FOR PLAYER...";
+            textGame.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+            blocGame.addControl(textGame);
+        }
     }
 
     create(guiMenu) {
@@ -165,7 +184,7 @@ export class RoomScene {
         subGrid.addColumnDefinition(1);
         subGrid.addRowDefinition(30, true); // HEADER CANCEL BUTTON
         subGrid.addRowDefinition(padding, true);
-        subGrid.addRowDefinition(60, true); // HEADER TITLE
+        subGrid.addRowDefinition(30, true); // HEADER TITLE
         subGrid.addRowDefinition(padding, true);
         subGrid.addRowDefinition(1); // MAIN CONTENT
         subGrid.addRowDefinition(padding, true);
@@ -236,11 +255,33 @@ export class RoomScene {
         createBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
         subGrid.addControl(createBtn, 7);
 
+        ///////
         createBtn.onPointerUpObservable.add(() => {
             this.room.send(ServerMsg.START_GAME_REQUESTED);
         });
 
         // load scene
         this._ui = guiMenu;
+    }
+
+    test() {
+        //////////// add map options
+        /*
+        var dropdownA = new MenuOptions(subHeaderGrid, { width: 180, height: 40 });
+        dropdownA.button.children[0].text = "Ajouter";
+        dropdownA.top = "10px";
+        dropdownA.left = "10px";
+        dropdownA.addOption("Option A", function () {
+            alert("Option A");
+        });
+        dropdownA.addOption("Option B", function () {
+            alert("Option B");
+        });
+        dropdownA.addOption("Option C", function () {
+            alert("Option C");
+        });
+        dropdownA.addOption("Option D", function () {
+            alert("Option D");
+        });*/
     }
 }

@@ -67,7 +67,7 @@ export class GameScene {
         ambient.intensity = 0.5;
 
         // generate level
-        let chosenMap = "map_01";
+        let chosenMap = "map_02";
         this._map = new MapHelper(chosenMap);
         this._generator = new LevelGenerator(this._scene, this._map, shadowGenerator);
 
