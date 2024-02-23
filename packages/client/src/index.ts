@@ -9,10 +9,12 @@ if (process.env.NODE_ENV !== "production") {
 // bjs post: https://forum.babylonjs.com/t/pickedmesh-is-null-in-onpointerobservable-after-update-to-6-25-0/45076/7
 // bjs docs: https://doc.babylonjs.com/setup/frameworkPackages/es6Support#faq
 // import("@babylonjs/core");
+
+import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent";
+
 /*
 import "@babylonjs/core/Culling/ray";
 import "@babylonjs/core/Animations/animatable";
-import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent";
 import "@babylonjs/core/Loading/loadingScreen";
 import "@babylonjs/loaders/glTF/2.0/glTFLoader";
 import "@babylonjs/loaders/glTF/2.0/Extensions/KHR_materials_pbrSpecularGlossiness";
