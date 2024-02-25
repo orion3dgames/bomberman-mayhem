@@ -1,4 +1,4 @@
-import { Room, Client, Delayed, Protocol, ServerError } from "colyseus";
+import { Room, Client, Delayed, Protocol, ServerError, updateLobby } from "colyseus";
 import { GameState } from "./GameState";
 import gameConfig from "../game.config";
 import Logger from "../../../shared/Utils/Logger";
@@ -50,7 +50,13 @@ export class GameRoom extends Room<GameState> {
         this.state.map = e.map;
 
         //
-        this.mapHelper = new MapHelper(e.map);
+        this.setMetadata({
+            map: e.map,
+        }).then(() => {
+            this.changeMap(e.map);
+        });
+
+        //
 
         //
         console.log("Creating Room", this.roomId, this.state.map);
@@ -159,6 +165,10 @@ export class GameRoom extends Room<GameState> {
                 return false;
             }
 
+            if (type === ServerMsg.START_MAP_UPDATE) {
+                this.changeMap(data.key);
+            }
+
             if (type === ServerMsg.START_GAME_REQUESTED) {
                 this.lock();
                 this.broadcast(ServerMsg.START_GAME, true);
@@ -168,6 +178,16 @@ export class GameRoom extends Room<GameState> {
                 console.log(ServerMsg[ServerMsg.PLAYER_MOVE], data);
                 playerState.move(data);
             }
+        });
+    }
+
+    public changeMap(key) {
+        this.setMetadata({
+            map: key,
+        }).then(() => {
+            updateLobby(this);
+            this.state.map = key;
+            this.mapHelper = new MapHelper(key);
         });
     }
 }

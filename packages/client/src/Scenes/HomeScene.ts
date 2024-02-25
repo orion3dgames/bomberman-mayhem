@@ -103,7 +103,10 @@ export class HomeScene {
 
         if (this.allRooms.length > 0) {
             this.allRooms.forEach((room) => {
-                const blocGame = Button.CreateSimpleButton("blocGame" + room.roomId, room.roomId + ": " + room.clients + "/" + room.maxClients);
+                const blocGame = Button.CreateSimpleButton(
+                    "blocGame" + room.roomId,
+                    room.roomId + ": " + room.clients + "/" + room.maxClients + " | " + room.metadata.map
+                );
                 blocGame.width = 1;
                 blocGame.height = "60px";
                 blocGame.color = "white";

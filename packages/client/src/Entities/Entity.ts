@@ -130,4 +130,9 @@ export class Entity extends TransformNode {
             this.moveController.processMove();
         }
     }
+
+    public delete() {
+        this.playerMesh.dispose();
+        this.characterLabel.dispose();
+    }
 }

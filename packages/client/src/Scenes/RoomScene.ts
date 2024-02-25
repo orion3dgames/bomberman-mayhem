@@ -81,6 +81,11 @@ export class RoomScene {
             this.callbacksToRemove.push(evtOnAdd);
             this.callbacksToRemove.push(evtOnRemove);
 
+            // monitor map changes
+            this.room.state.listen("map", (currentValue, previousValue) => {
+                this.changeMap(currentValue);
+            });
+
             // start game event
             this.room.onMessage(ServerMsg.START_GAME, (message) => {
                 console.log("message received from server", message);
@@ -95,6 +100,11 @@ export class RoomScene {
                 this._game.setScene(SceneName.GAME);
             });
         }
+    }
+
+    changeMap(key) {
+        this._game.selectedMap = this._game.maps[key];
+        this.updateMaps();
     }
 
     updatePlayers() {
@@ -185,8 +195,8 @@ export class RoomScene {
             let background = this._game.selectedMap && this._game.selectedMap.key == map.key ? "green" : "white";
 
             const mapBtn = Button.CreateSimpleButton("mapBtn" + makKey, map.name);
-            mapBtn.width = 1;
-            mapBtn.height = "30px";
+            mapBtn.width = "100px";
+            mapBtn.height = "60px";
             mapBtn.color = "black";
             mapBtn.background = background;
             mapBtn.thickness = 1;
@@ -196,6 +206,7 @@ export class RoomScene {
 
             mapBtn.onPointerUpObservable.add(() => {
                 this._game.selectedMap = map;
+                this.room.send(ServerMsg.START_MAP_UPDATE, { key: map.key });
                 this.updateMaps();
             });
         }
@@ -286,7 +297,6 @@ export class RoomScene {
         const mapScrollViewer = new ScrollViewer("mapScrollViewer");
         mapScrollViewer.width = 1;
         mapScrollViewer.height = 1;
-        mapScrollViewer.top = "0px";
         mapScrollViewer.thickness = 0;
         mapScrollViewer.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         mapScrollViewer.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
@@ -297,8 +307,8 @@ export class RoomScene {
         mapStackPanel.width = "100%";
         mapStackPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         mapStackPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-        mapStackPanel.paddingTop = "5px;";
         mapStackPanel.spacing = 5;
+        mapStackPanel.isVertical = false;
         mapStackPanel.setPadding(padding, padding, padding, padding);
         mapScrollViewer.addControl(mapStackPanel);
         this.mapStackPanel = mapStackPanel;

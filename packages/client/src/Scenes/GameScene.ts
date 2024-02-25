@@ -67,7 +67,7 @@ export class GameScene {
         ambient.intensity = 0.5;
 
         // generate level
-        let chosenMap = "map_02";
+        let chosenMap = this._game.selectedMap.key;
         this._map = new MapHelper(chosenMap);
         this._generator = new LevelGenerator(this._scene, this._map, shadowGenerator);
 
@@ -103,8 +103,8 @@ export class GameScene {
 
         // removing player
         this.room.state.players.onRemove((entity, sessionId) => {
-            console.log("[GAME] ENTITY LEFT", sessionId);
-
+            console.log("[GAME] ENTITY LEFT", entity);
+            this.entities.get(sessionId).delete();
             this.entities.delete(sessionId);
         });
 

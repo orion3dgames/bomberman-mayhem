@@ -53,6 +53,7 @@ export enum ServerMsg {
     PING = 1,
     PONG,
     START_GAME,
+    START_MAP_UPDATE,
     START_GAME_REQUESTED,
     PLAYER_MOVE,
 }
