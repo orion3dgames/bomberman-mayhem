@@ -1,4 +1,4 @@
-import { Room, Client, Delayed, Protocol, ServerError, updateLobby } from "colyseus";
+import { Room, Client, Delayed, Protocol, ServerError, updateLobby, generateId } from "colyseus";
 import { GameState } from "./GameState";
 import gameConfig from "../game.config";
 import Logger from "../../../shared/Utils/Logger";
@@ -7,6 +7,7 @@ import { MapHelper } from "../../../shared/MapHelper";
 
 import { generateRoomId } from "../Utils/Utils";
 import { Player } from "./Entities/Player";
+import { Wall } from "./Entities/Wall";
 
 export class GameRoom extends Room<GameState> {
     /** Current timeout skip reference */
@@ -103,6 +104,27 @@ export class GameRoom extends Room<GameState> {
         );
 
         this.state.players.set(client.sessionId, player);
+
+        // generate initial state
+        if (this.state.players.size === 1) {
+            // create breakable walls
+            this.mapHelper.cells.forEach((cols, colId) => {
+                cols.forEach((row, rowId) => {
+                    if (row.id === " " && Math.random() < 0.5) {
+                        let wall = new Wall(
+                            {
+                                sessionId: generateId(),
+                                x: colId,
+                                y: 0,
+                                z: rowId,
+                            },
+                            this
+                        );
+                        this.state.entities.set(wall.sessionId, wall);
+                    }
+                });
+            });
+        }
     }
 
     async onLeave(client: Client, consented: boolean) {

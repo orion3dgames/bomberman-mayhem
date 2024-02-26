@@ -13,9 +13,7 @@ import { Entity } from "../Entities/Entity";
 import { PlayerUI } from "../Controllers/PlayerUI";
 import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
 import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
-import { SpotLight } from "@babylonjs/core/Lights/spotLight";
-import { RenderTargetTexture } from "@babylonjs/core/Materials/Textures/renderTargetTexture";
-import { SSAO2RenderingPipeline } from "@babylonjs/core/PostProcesses/RenderPipeline/Pipelines/ssao2RenderingPipeline";
+import { Wall } from "../Entities/Wall";
 
 export class GameScene {
     public _game: GameController;
@@ -96,9 +94,13 @@ export class GameScene {
         this.room = this._game.joinedRoom;
         this.sessionId = this.room.sessionId;
 
+        ///////////////////////////////////////////////////////////////////////////
+        /////////////////////////// COLYSEUS STATE
+
+        ////////////////////// PLAYERS
         // on new player
         this.room.state.players.onAdd((entity, sessionId) => {
-            console.log("[GAME] ENTITY ADDED", entity);
+            console.log("[GAME] PLAYER ADDED", entity);
             let currentPlayer = sessionId === this.sessionId;
             if (currentPlayer) {
                 let player = new Entity(sessionId, this._scene, this, entity, currentPlayer);
@@ -111,9 +113,18 @@ export class GameScene {
 
         // removing player
         this.room.state.players.onRemove((entity, sessionId) => {
-            console.log("[GAME] ENTITY LEFT", entity);
+            console.log("[GAME] PLAYER LEFT", entity);
             this.entities.get(sessionId).delete();
             this.entities.delete(sessionId);
+        });
+
+        ////////////////////// ENTITIES
+        // on new entity
+        this.room.state.entities.onAdd((entity, sessionId) => {
+            //console.log("[GAME] ENTITY ADDED", entity);
+            if (entity.type === "breakable_wall") {
+                this.entities.set(sessionId, new Wall(sessionId, this._scene, this, entity));
+            }
         });
 
         // start game event
@@ -126,6 +137,16 @@ export class GameScene {
         this._scene.registerBeforeRender(() => {
             let delta = this._engine.getFps();
             let timeNow = Date.now();
+
+            // update game state first
+            /*
+            this._map.cells = [...this._map.baseCells];
+            this.entities.forEach((entity) => {
+                if (this._map.cells[entity.x][entity.z] && entity.tile && this._map.cells[entity.x][entity.z] !== entity.tile) {
+                    console.log("UPDATE CELL", this._map.cells);
+                    this._map.cells[entity.x][entity.z] = entity.tile;
+                }
+            });*/
 
             // game update loop
             this.entities.forEach((entity) => {

@@ -1,5 +1,5 @@
-import maps from "./Maps/maps.json";
-import { tiles } from "./Maps/tiles";
+import tiles from "./Data/tiles.json";
+import maps from "./Data/maps.json";
 import { ITiles, Tile } from "./types";
 
 export class MapHelper {
@@ -9,7 +9,8 @@ export class MapHelper {
 
     // spawn points
     public spawnPoints: any = [];
-    public unwalkableTiles: any = [];
+    public baseCells: any = [];
+    public cells: any = [];
 
     constructor(mapName: string = "map_01") {
         // get map data
@@ -44,10 +45,27 @@ export class MapHelper {
      * @returns boolean
      */
     public isTileAvailable(row, col): boolean {
-        if (!this.unwalkableTiles[row][col]) {
+        if (this.cells[row][col].isWalkable) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * check if cell is available.
+     * @param entities
+     * @param x
+     * @param z
+     * @returns
+     */
+    public isCellAvailable(entities, x, z) {
+        for (let [key, element] of entities) {
+            if (element.x === x && element.z === z) {
+                console.log("CANNOT MOVE TO: ", x, z);
+                return false;
+            }
+        }
+        return true;
     }
 
     public async generate(map: string) {
@@ -56,18 +74,29 @@ export class MapHelper {
                 this.processTile(tileID, colId, rowId);
             });
         });
+        this.baseCells = [...this.cells];
+    }
+
+    public findTile(tileID, id = "id") {
+        let found;
+        for (let tID in tiles) {
+            let tile = tiles[tID];
+            if (tile && tile[id] === tileID) {
+                found = tile;
+            }
+        }
+        return found;
     }
 
     private processTile(tileID, colId, rowId) {
         // get tile details
-        let foundTile = this.tiles[tileID] as Tile;
+        let foundTile = this.findTile(tileID) as Tile;
 
         // tile not found
         if (!foundTile) console.error("Tile: " + tileID + " does not exist, map data is corrupted");
 
         // spawnpoint tiles
         if (foundTile.id == "S") {
-            console.log(foundTile);
             this.spawnPoints.push({
                 player: false,
                 position: {
@@ -78,12 +107,10 @@ export class MapHelper {
             });
         }
 
-        // is walkable tiles
-        if (!foundTile.isWalkable) {
-            if (!this.unwalkableTiles[rowId]) {
-                this.unwalkableTiles[rowId] = [];
-            }
-            this.unwalkableTiles[rowId][colId] = foundTile.id;
+        // add to map cells
+        if (!this.cells[rowId]) {
+            this.cells[rowId] = [];
         }
+        this.cells[rowId][colId] = foundTile;
     }
 }

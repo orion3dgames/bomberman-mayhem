@@ -8,6 +8,7 @@
         "strict": false,
         "experimentalDecorators": true,
         "esModuleInterop": true,
+        "resolveJsonModule": true,
         "allowJs": true,
         "moduleResolution": "node",
         "types": ["node"],

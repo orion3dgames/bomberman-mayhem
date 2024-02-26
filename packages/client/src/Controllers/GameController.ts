@@ -3,7 +3,7 @@ import { Config } from "../../../shared/Config";
 import { SceneName, User } from "../../../shared/types";
 import { generateUserName } from "../Utils/Utils";
 
-import maps from "../../../shared/Maps/maps.json";
+import maps from "../../../shared/Data/maps.json";
 
 export class GameController {
     // core

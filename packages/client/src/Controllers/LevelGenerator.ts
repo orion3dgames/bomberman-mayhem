@@ -13,7 +13,7 @@ export class LevelGenerator {
     private _map: MapHelper;
     private _shadow: ShadowGenerator;
 
-    private assets = [];
+    public assets = [];
     private materials = [];
     private offset_x: number = 0;
     private offset_z: number = 0;
@@ -40,13 +40,14 @@ export class LevelGenerator {
     public generateMaterials() {
         let wallTxt = new Texture("textures/wall_02.jpg", this._scene);
         let groundTxt = new Texture("textures/ground_01.jpg", this._scene);
+        let wallBrokenTxt = new Texture("textures/wall_02_broken.jpg", this._scene);
 
         for (let tileID in this._map.tiles) {
             let tile = this._map.tiles[tileID];
 
             // ground or spawnpoint
             if (tile.id === " " || tile.id === "S") {
-                const material = new StandardMaterial("box-material", this._scene);
+                const material = new StandardMaterial("material-ground", this._scene);
                 material.diffuseTexture = groundTxt;
                 material.specularColor = Color3.Black();
                 this.materials[tile.name] = material;
@@ -54,8 +55,16 @@ export class LevelGenerator {
 
             // wall
             if (tile.id === "W") {
-                const material = new StandardMaterial("box-material", this._scene);
+                const material = new StandardMaterial("material-wall", this._scene);
                 material.diffuseTexture = wallTxt;
+                material.specularColor = Color3.Black();
+                this.materials[tile.name] = material;
+            }
+
+            // broken wall
+            if (tile.id === "B") {
+                const material = new StandardMaterial("material-broken", this._scene);
+                material.diffuseTexture = wallBrokenTxt;
                 material.specularColor = Color3.Black();
                 this.materials[tile.name] = material;
             }
@@ -84,6 +93,15 @@ export class LevelGenerator {
                 box.isVisible = false;
                 this.assets[tile.name] = box;
             }
+
+            // broken wall
+            if (tile.id === "B") {
+                const box = MeshBuilder.CreateBox("box-" + tile.name, { size: tile.width, height: 2 }, this._scene);
+                box.position = new Vector3(0, 0, 0);
+                box.material = this.materials[tile.name];
+                box.isVisible = false;
+                this.assets[tile.name] = box;
+            }
         }
     }
 
@@ -96,7 +114,7 @@ export class LevelGenerator {
     }
 
     createInstance(tileID, colId, rowId) {
-        let tile = this._map.tiles[tileID] as Tile;
+        let tile = this._map.findTile(tileID);
         if (tile) {
             let posX = rowId - this.offset_x;
             let posZ = colId - this.offset_z;

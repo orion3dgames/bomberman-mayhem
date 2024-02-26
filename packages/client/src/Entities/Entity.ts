@@ -13,6 +13,7 @@ import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { MoveController } from "./Entity/MoveController";
 import { MapHelper } from "../../../shared/MapHelper";
+import tiles from "../../../shared/Data/tiles.json";
 
 export class Entity extends TransformNode {
     public _camera: PlayerCamera;
@@ -26,12 +27,13 @@ export class Entity extends TransformNode {
     public _ui: PlayerUI;
     public playerMesh: Mesh;
     public isCurrentPlayer;
-
+    public tile;
     public characterLabel;
-
     public moveController: MoveController;
+    public _entities;
 
     public sessionId: string = "";
+    public type;
     public name: string = "";
     public x: number = 0;
     public y: number = 0;
@@ -48,12 +50,15 @@ export class Entity extends TransformNode {
         this._game = gameScene._game;
         this._ui = gameScene._ui;
         this._shadow = gameScene._shadow;
+        this._entities = gameScene.entities;
         this._entity = entity;
         this.isCurrentPlayer = isCurrentPlayer;
 
-        //
         // set entity
         Object.assign(this, entity);
+
+        // set tile
+        this.tile = this._map.findTile(this.type, "name");
 
         // if current player
         if (isCurrentPlayer) {
@@ -129,6 +134,16 @@ export class Entity extends TransformNode {
         if (this.isCurrentPlayer) {
             this.moveController.processMove();
         }
+    }
+
+    public isTileAvailable(x, z) {
+        for (let [key, element] of this._entities) {
+            if (element._entity.x === x && element._entity.z === z) {
+                console.log("CANNOT MOVE TO: ", x, z, this._entities);
+                return false;
+            }
+        }
+        return true;
     }
 
     public delete() {

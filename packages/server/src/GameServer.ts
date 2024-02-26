@@ -8,6 +8,7 @@ import Logger from "../../shared/Utils/Logger";
 
 import { Server, matchMaker, LobbyRoom } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport";
+import { monitor } from "@colyseus/monitor";
 
 import { GameRoom } from "./Rooms/GameRoom";
 
@@ -50,7 +51,10 @@ export default class GameServer {
         });
 
         // simulate 200ms latency between server and client.
-        gameServer.simulateLatency(0);
+        gameServer.simulateLatency(200);
+
+        //
+        app.use("/colyseus", monitor());
 
         // server staic files
         app.use(express.static(indexPath));

@@ -38,7 +38,6 @@ export class MoveController {
     public setPositionAndRotation(entity): void {
         this.nextPosition = new Vector3(entity.x, entity.y, entity.z);
         this.nextRotation = new Vector3(0, entity.rot, 0);
-        console.log();
     }
 
     // server Reconciliation. Re-apply all the inputs not yet processed by the server
@@ -89,10 +88,12 @@ export class MoveController {
             };
 
             // sent current input to server for processing
+            //if (this.canMove(latestInput)) {
             this._room.send(ServerMsg.PLAYER_MOVE, latestInput);
 
             // do client side prediction
-            this.predictionMove(latestInput);
+            //this.predictionMove(latestInput);
+            //}
         }
     }
 
@@ -100,6 +101,19 @@ export class MoveController {
         // continuously lerp between current position and next position
         this._player.position = Vector3.Lerp(this._player.position, this.nextPosition, 0.5);
         this._player.playerMesh.rotation = this.nextRotation;
+    }
+
+    public canMove(playerInput) {
+        // save current position
+        let oldX = this.nextPosition.x;
+        let oldZ = this.nextPosition.z;
+        let speed = 1;
+        let newX = oldX - playerInput.h * speed;
+        let newZ = oldZ - playerInput.v * speed;
+        if (this._player._map.isTileAvailable(newX, newZ) && this._player.isTileAvailable(newX, newZ)) {
+            return true;
+        }
+        return false;
     }
 
     public move(playerInput: PlayerInputs): void {
@@ -116,11 +130,10 @@ export class MoveController {
             let newZ = oldZ - playerInput.v * speed;
 
             // check it fits in navmesh
-            if (this._player._map.isTileAvailable(newX, newZ)) {
-                this.nextPosition.x = newX;
-                this.nextPosition.z = newZ;
-                this.nextRotation.y = this.nextRotation.y + (newRotY - this.nextRotation.y);
-            }
+            // and no entities already there
+            this.nextPosition.x = newX;
+            this.nextPosition.z = newZ;
+            this.nextRotation.y = this.nextRotation.y + (newRotY - this.nextRotation.y);
         }
     }
 }

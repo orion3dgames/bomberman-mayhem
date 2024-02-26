@@ -1,28 +1,21 @@
 import { Schema, type } from "@colyseus/schema";
+import { Entity } from "./Entity";
 import { GameRoom } from "../GameRoom";
 
-export class Player extends Schema {
-    @type("string") sessionId: string;
+export class Player extends Entity {
     @type("string") name: string;
     @type("boolean") ready = false;
     @type("boolean") autoReady = false;
     @type("boolean") disconnected = false;
     @type("boolean") admin: boolean = false;
-    @type("int16") x: number = 0;
-    @type("int16") y: number = 0;
-    @type("int16") z: number = 0;
-    @type("float32") rot: number = 0;
     @type("int16") sequence: number = 0;
 
     public room: GameRoom;
 
     constructor(args, room: GameRoom) {
-        super();
+        super(args, room);
 
-        this.room = room;
-
-        // add spawn data
-        Object.assign(this, args);
+        this.type = "player";
     }
 
     move(playerInput) {
@@ -36,7 +29,7 @@ export class Player extends Schema {
         const newRotY = Math.atan2(playerInput.h, playerInput.v);
 
         // check if next position is within allowed cells
-        if (this.room.mapHelper.isTileAvailable(newX, newZ)) {
+        if (this.room.mapHelper.isTileAvailable(newX, newZ) && this.room.mapHelper.isCellAvailable(this.room.state.entities, newX, newZ)) {
             this.x = newX;
             this.y = newY;
             this.z = newZ;
