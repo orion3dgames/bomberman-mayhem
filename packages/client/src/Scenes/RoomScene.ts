@@ -53,6 +53,9 @@ export class RoomScene {
         // set scene
         this._scene = scene;
 
+        // hide loading screen
+        this._game.engine.hideLoadingUI();
+
         // set sky color
         this._scene.clearColor = new Color4(0.1, 0.1, 0.1, 1);
 

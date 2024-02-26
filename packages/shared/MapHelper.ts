@@ -1,4 +1,4 @@
-import { map_01, map_02 } from "./Maps";
+import maps from "./Maps/maps.json";
 import { tiles } from "./Maps/tiles";
 import { ITiles, Tile } from "./types";
 
@@ -13,7 +13,7 @@ export class MapHelper {
 
     constructor(mapName: string = "map_01") {
         // get map data
-        this.mapData = this.getMapData(mapName);
+        this.mapData = maps[mapName].data;
 
         // get all map tiles
         this.tiles = tiles;
@@ -84,17 +84,6 @@ export class MapHelper {
                 this.unwalkableTiles[rowId] = [];
             }
             this.unwalkableTiles[rowId][colId] = foundTile.id;
-        }
-    }
-
-    private getMapData(mapName: string) {
-        switch (mapName) {
-            case "map_01":
-                return map_01;
-                break;
-            case "map_02":
-                return map_02;
-                break;
         }
     }
 }

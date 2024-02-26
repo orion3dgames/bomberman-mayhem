@@ -64,7 +64,7 @@ class App {
         this.game = new GameController(this);
 
         // set default scene
-        this.game.setScene(SceneName.HOME);
+        this.game.setScene(SceneName.GAME);
 
         // main render loop & state machine
         await this._render();
@@ -149,9 +149,6 @@ class App {
     private async _process(): Promise<void> {
         // make sure scene and camera is initialized
         if (this.game.scene && this.game.scene.activeCamera) {
-            //when the scene is ready, hide loading
-            this.engine.hideLoadingUI();
-
             // render scene
             this.game.scene.render();
         }
@@ -159,7 +156,7 @@ class App {
 
     private clearScene() {
         if (this.game.scene) {
-            //this.game.engine.displayLoadingUI();
+            this.game.engine.displayLoadingUI();
             this.game.scene.detachControl();
             this.game.scene.dispose();
             this.game.currentScene = null;

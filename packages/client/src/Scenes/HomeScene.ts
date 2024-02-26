@@ -46,6 +46,9 @@ export class HomeScene {
         // set scene
         this._scene = scene;
 
+        // hide loading screen
+        this._game.engine.hideLoadingUI();
+
         // set sky color
         this._scene.clearColor = new Color4(0.1, 0.1, 0.1, 1);
 
@@ -264,10 +267,10 @@ export class HomeScene {
         subHeaderGrid.addControl(createBtn);
 
         createBtn.onPointerUpObservable.add(async () => {
+            this.lobbyJoined.leave();
             this._game.client.create(this._game.user.displayName).then((joinedRoom) => {
                 this._game.joinedRoom = joinedRoom;
                 this._game.setScene(SceneName.ROOM);
-                this.lobbyJoined.leave();
             });
         });
 

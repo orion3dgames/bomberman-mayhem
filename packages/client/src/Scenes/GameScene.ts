@@ -47,6 +47,9 @@ export class GameScene {
         // set scene
         this._scene = scene;
 
+        //
+        this._game.engine.displayLoadingUI();
+
         // set sky color
         this._scene.clearColor = new Color4(0.1, 0.1, 0.1, 1);
 
@@ -83,6 +86,11 @@ export class GameScene {
             let hash = window.location.hash.substring(1);
             this._game.joinedRoom = await this._game.client.createOrJoin(hash, this._game.user);
         }
+
+        // hide loading screen
+        setTimeout(() => {
+            this._game.engine.hideLoadingUI();
+        }, 1000);
 
         // set room
         this.room = this._game.joinedRoom;
