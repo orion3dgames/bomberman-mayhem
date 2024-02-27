@@ -190,11 +190,11 @@ export class HomeScene {
         // header
 
         // logo
-        var imgLogo = new Image("imgLogo", "./images/logo2.png");
+        var imgLogo = new Image("imgLogo", "./images/logo.png");
         imgLogo.stretch = Image.STRETCH_UNIFORM;
         imgLogo.top = "10px";
         imgLogo.width = 1;
-        imgLogo.height = "60px;";
+        imgLogo.height = "70px;";
         imgLogo.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         header.addControl(imgLogo);
 
@@ -203,7 +203,8 @@ export class HomeScene {
         welcomeText.width = 0.8;
         welcomeText.height = "30px";
         welcomeText.color = "white";
-        welcomeText.top = "75px";
+        welcomeText.top = "80px";
+        welcomeText.fontSizeInPixels = 12;
         welcomeText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         welcomeText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         header.addControl(welcomeText);
