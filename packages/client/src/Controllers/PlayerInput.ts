@@ -11,6 +11,7 @@ export class PlayerInput {
     public horizontal: number = 0;
 
     public player_can_move: boolean = false;
+    public space_pressed: boolean = false;
 
     constructor(entity: Entity) {
         this._scene = entity._scene;
@@ -38,6 +39,9 @@ export class PlayerInput {
                         this.horizontal = 1;
                         this.player_can_move = true;
                     }
+                    if (kbInfo.event.code === "Space") {
+                        this.space_pressed = true;
+                    }
 
                     break;
 
@@ -58,6 +62,9 @@ export class PlayerInput {
                     if (kbInfo.event.code === "ArrowLeft") {
                         this.horizontal = 0;
                         this.player_can_move = false;
+                    }
+                    if (kbInfo.event.code === "Space") {
+                        this.space_pressed = false;
                     }
 
                     break;

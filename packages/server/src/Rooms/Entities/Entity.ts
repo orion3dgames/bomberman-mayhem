@@ -1,13 +1,13 @@
 import { Schema, type } from "@colyseus/schema";
 import { GameRoom } from "../GameRoom";
+import { CellType } from "../../../../shared/types";
 
 export class Entity extends Schema {
     @type("string") sessionId: string;
-    @type("string") type: string;
-    @type("int16") x: number = 0;
-    @type("int16") y: number = 0;
-    @type("int16") z: number = 0;
-    @type("float32") rot: number = 0;
+    @type("int8") type: CellType;
+    @type("int8") x: number = 0;
+    @type("int8") y: number = 0;
+    @type("int8") z: number = 0;
 
     public room: GameRoom;
 
@@ -18,7 +18,7 @@ export class Entity extends Schema {
 
         // add spawn data
         Object.assign(this, args);
-
-        this.type = "entity";
     }
+
+    public update(dt) {}
 }

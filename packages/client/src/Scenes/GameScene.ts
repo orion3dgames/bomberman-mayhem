@@ -3,7 +3,7 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { Color4 } from "@babylonjs/core/Maths/math.color";
 
 import { GameController } from "../Controllers/GameController";
-import { SceneName, ServerMsg } from "../../../shared/types";
+import { CellType, SceneName, ServerMsg } from "../../../shared/types";
 import { MapHelper } from "../../../shared/MapHelper";
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
@@ -14,6 +14,7 @@ import { PlayerUI } from "../Controllers/PlayerUI";
 import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
 import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
 import { Wall } from "../Entities/Wall";
+import { Bomb } from "../Entities/Bomb";
 
 export class GameScene {
     public _game: GameController;
@@ -83,6 +84,7 @@ export class GameScene {
         if (!this._game.joinedRoom) {
             let hash = window.location.hash.substring(1);
             this._game.joinedRoom = await this._game.client.createOrJoin(hash, this._game.user);
+            this._game.joinedRoom.send(ServerMsg.START_GAME_REQUESTED);
         }
 
         // hide loading screen
@@ -121,11 +123,21 @@ export class GameScene {
         ////////////////////// ENTITIES
         // on new entity
         this.room.state.entities.onAdd((entity, sessionId) => {
-            //console.log("[GAME] ENTITY ADDED", entity);
-            if (entity.type === "breakable_wall") {
+            if (entity.type === CellType.BREAKABLE_WALL) {
                 this.entities.set(sessionId, new Wall(sessionId, this._scene, this, entity));
             }
+            if (entity.type === CellType.BOMB) {
+                this.entities.set(sessionId, new Bomb(sessionId, this._scene, this, entity));
+            }
         });
+
+        this.room.state.entities.onRemove((entity, sessionId) => {
+            this.entities.get(sessionId).delete();
+            this.entities.delete(sessionId);
+        });
+
+        ////////////////////// END COLYSEUS STATE
+        /////////////////////////////////////////////////////////////////////////////
 
         // start game event
         this.room.onMessage(ServerMsg.START_GAME, (message) => {

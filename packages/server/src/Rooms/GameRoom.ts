@@ -8,6 +8,7 @@ import { MapHelper } from "../../../shared/MapHelper";
 import { generateRoomId } from "../Utils/Utils";
 import { Player } from "./Entities/Player";
 import { Wall } from "./Entities/Wall";
+import { Bomb } from "./Entities/Bomb";
 
 export class GameRoom extends Room<GameState> {
     /** Current timeout skip reference */
@@ -43,14 +44,10 @@ export class GameRoom extends Room<GameState> {
             this.roomId = e.roomId;
         }
 
-        //this.setPrivate();
         this.setState(new GameState({}));
         this.clock.start();
 
-        // set metadata
-        this.state.map = e.map;
-
-        //
+        // set map
         this.setMetadata({
             map: e.map,
         }).then(() => {
@@ -58,9 +55,8 @@ export class GameRoom extends Room<GameState> {
         });
 
         //
-
-        //
-        console.log("Creating Room", this.roomId, this.state.map);
+        this.mapHelper = new MapHelper(this.metadata.map);
+        console.log("Creating Room", this.roomId, e.map);
 
         //Send ping messages to all clients
         //Set a simulation interval that can change the state of the game
@@ -78,7 +74,7 @@ export class GameRoom extends Room<GameState> {
 
         //We have to kick the oldest disconnected player to make space for new player
         if (this.state.players.size + Object.keys(this._reconnections).length == gameConfig.maxClients) {
-            Object.values(this._reconnections)[0].reject();
+            //Object.values(this._reconnections)[0].reject();
         }
 
         return auth;
@@ -104,27 +100,6 @@ export class GameRoom extends Room<GameState> {
         );
 
         this.state.players.set(client.sessionId, player);
-
-        // generate initial state
-        if (this.state.players.size === 1) {
-            // create breakable walls
-            this.mapHelper.cells.forEach((cols, colId) => {
-                cols.forEach((row, rowId) => {
-                    if (row.id === " " && Math.random() < 0.5) {
-                        let wall = new Wall(
-                            {
-                                sessionId: generateId(),
-                                x: colId,
-                                y: 0,
-                                z: rowId,
-                            },
-                            this
-                        );
-                        this.state.entities.set(wall.sessionId, wall);
-                    }
-                });
-            });
-        }
     }
 
     async onLeave(client: Client, consented: boolean) {
@@ -192,7 +167,13 @@ export class GameRoom extends Room<GameState> {
             }
 
             if (type === ServerMsg.START_GAME_REQUESTED) {
+                // lock the room
                 this.lock();
+
+                // generate level
+                this.generateLevel();
+
+                // send all players instructions to start
                 this.broadcast(ServerMsg.START_GAME, true);
             }
 
@@ -200,7 +181,33 @@ export class GameRoom extends Room<GameState> {
                 console.log(ServerMsg[ServerMsg.PLAYER_MOVE], data);
                 playerState.move(data);
             }
+
+            if (type === ServerMsg.PLACE_BOMB) {
+                if (playerState.bombs > 0) {
+                    console.log(ServerMsg[ServerMsg.PLACE_BOMB], data);
+                    let bomb = new Bomb(
+                        {
+                            sessionId: generateId(),
+                            owner: playerState.sessionId,
+                            x: playerState.x,
+                            y: playerState.y,
+                            z: playerState.z,
+                            size: playerState.explosion_size,
+                        },
+                        this
+                    );
+
+                    this.state.entities.set(bomb.sessionId, bomb);
+
+                    playerState.bombs--;
+                }
+            }
         });
+    }
+
+    public generateLevel() {
+        // create map
+        this.mapHelper.generateBreakableCells(this);
     }
 
     public changeMap(key) {
@@ -208,8 +215,6 @@ export class GameRoom extends Room<GameState> {
             map: key,
         }).then(() => {
             updateLobby(this);
-            this.state.map = key;
-            this.mapHelper = new MapHelper(key);
         });
     }
 }

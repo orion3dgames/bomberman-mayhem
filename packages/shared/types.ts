@@ -26,6 +26,14 @@ export interface ITiles {
     [key: string]: Tile;
 }
 
+export enum CellType {
+    GROUND = 0,
+    WALL,
+    BREAKABLE_WALL,
+    PLAYER,
+    BOMB,
+}
+
 ///////////////////////////////
 ///////////////////////////////
 ///////////////////////////////
@@ -56,6 +64,7 @@ export enum ServerMsg {
     START_MAP_UPDATE,
     START_GAME_REQUESTED,
     PLAYER_MOVE,
+    PLACE_BOMB,
 }
 
 export type PlayerInputs = {
@@ -63,3 +72,9 @@ export type PlayerInputs = {
     h: number;
     v: number;
 };
+
+export enum ServerStatus {
+    CREATED = 1,
+    STARTED,
+    FINISHED,
+}

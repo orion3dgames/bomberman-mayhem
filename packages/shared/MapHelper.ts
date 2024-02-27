@@ -1,9 +1,9 @@
 import tiles from "./Data/tiles.json";
 import maps from "./Data/maps.json";
 import { ITiles, Tile } from "./types";
+import { Wall } from "../server/src/Rooms/Entities/Wall";
 
 export class MapHelper {
-    //
     public mapData;
     public tiles: ITiles = {};
 
@@ -112,5 +112,38 @@ export class MapHelper {
             this.cells[rowId] = [];
         }
         this.cells[rowId][colId] = foundTile;
+    }
+
+    //////////////////////////////////////////
+    //////////////////////////////////////////
+    //////// SERVER ONLY METHODS /////////////
+    //////////////////////////////////////////
+    //////////////////////////////////////////
+
+    public updateCell(colId, rowId, type) {}
+
+    public generateBreakableCells(room) {
+        // create breakable walls
+        this.cells.forEach((cols, colId) => {
+            cols.forEach((row, rowId) => {
+                // 50% chance empty ground will be a soft wall
+                if (row.id === " " && Math.random() < 0.5) {
+                    // add wall
+                    let wall = new Wall(
+                        {
+                            sessionId: "wall-" + colId + "-" + rowId,
+                            x: colId,
+                            y: 0,
+                            z: rowId,
+                        },
+                        room
+                    );
+                    room.state.entities.set(wall.sessionId, wall);
+
+                    // update cells
+                    this.cells[colId][rowId] = tiles.breakable_wall;
+                }
+            });
+        });
     }
 }

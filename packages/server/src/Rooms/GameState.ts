@@ -7,9 +7,21 @@ export class GameState extends Schema {
     @type({ map: Player }) players = new MapSchema<Player>();
     @type({ map: Entity }) entities = new MapSchema<Entity>();
 
+    public cells: any[] = [];
+
     constructor(args) {
         super();
     }
 
-    public update(dt) {}
+    public update(dt) {
+        // update players
+        this.players.forEach((entity) => {
+            entity.update(dt);
+        });
+
+        // update entities
+        this.entities.forEach((entity) => {
+            entity.update(dt);
+        });
+    }
 }

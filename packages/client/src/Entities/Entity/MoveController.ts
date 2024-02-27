@@ -103,19 +103,6 @@ export class MoveController {
         this._player.playerMesh.rotation = this.nextRotation;
     }
 
-    public canMove(playerInput) {
-        // save current position
-        let oldX = this.nextPosition.x;
-        let oldZ = this.nextPosition.z;
-        let speed = 1;
-        let newX = oldX - playerInput.h * speed;
-        let newZ = oldZ - playerInput.v * speed;
-        if (this._player._map.isTileAvailable(newX, newZ) && this._player.isTileAvailable(newX, newZ)) {
-            return true;
-        }
-        return false;
-    }
-
     public move(playerInput: PlayerInputs): void {
         if (this.isCurrentPlayer) {
             // save current position

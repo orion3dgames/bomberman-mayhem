@@ -14,6 +14,7 @@ import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { MoveController } from "./Entity/MoveController";
 import { MapHelper } from "../../../shared/MapHelper";
 import tiles from "../../../shared/Data/tiles.json";
+import { ServerMsg } from "../../../shared/types";
 
 export class Entity extends TransformNode {
     public _camera: PlayerCamera;
@@ -132,7 +133,15 @@ export class Entity extends TransformNode {
     public updateServerRate() {
         // process player movement
         if (this.isCurrentPlayer) {
+            //
             this.moveController.processMove();
+
+            // if
+            if (this._input.space_pressed === true) {
+                this._room.send(ServerMsg.PLACE_BOMB);
+
+                this._input.space_pressed = false;
+            }
         }
     }
 
