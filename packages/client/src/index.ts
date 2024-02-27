@@ -11,7 +11,7 @@ if (process.env.NODE_ENV !== "production") {
 // import("@babylonjs/core");
 
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent";
-
+import "@babylonjs/core/Loading/loadingScreen";
 /*
 import "@babylonjs/core/Culling/ray";
 import "@babylonjs/core/Animations/animatable";
