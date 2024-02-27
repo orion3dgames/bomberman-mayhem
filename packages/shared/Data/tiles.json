@@ -44,5 +44,13 @@
         "height": 1,
         "offset_y": 0,
         "isWalkable": false
+    },
+    "explosion": {
+        "id": "E",
+        "name": "explosion",
+        "width": 1,
+        "height": 1,
+        "offset_y": 0,
+        "isWalkable": false
     }
 }

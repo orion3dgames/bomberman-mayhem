@@ -10,6 +10,7 @@ import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { MapHelper } from "../../../shared/MapHelper";
 import { LevelGenerator } from "../Controllers/LevelGenerator";
+import { Explosion } from "./Explosion";
 
 export class Bomb extends TransformNode {
     public _camera: PlayerCamera;
@@ -32,6 +33,7 @@ export class Bomb extends TransformNode {
     public x: number = 0;
     public y: number = 0;
     public z: number = 0;
+    public size: number = 1;
 
     public nextScale: number;
 
@@ -84,8 +86,37 @@ export class Bomb extends TransformNode {
         // add shadow
         this._shadow.addShadowCaster(instance);
 
-        // animation bomb scale every 60 frames
-        Animation.CreateAndStartAnimation("boxscale", instance, "scale", 30, 60, 0.8, 1.2, 1);
+        //Animate the bomb
+        const animWheel = new Animation("wheelAnimation", "scaling", 30, Animation.ANIMATIONTYPE_VECTOR3, Animation.ANIMATIONLOOPMODE_CYCLE);
+
+        const wheelKeys = [];
+
+        //At the animation key 0, the value of rotation.y is 0
+        wheelKeys.push({
+            frame: 0,
+            value: new Vector3(0.8, 0.8, 0.8),
+        });
+
+        //At the animation key 30, (after 1 sec since animation fps = 30) the value of rotation.y is 2PI for a complete rotation
+        wheelKeys.push({
+            frame: 15,
+            value: new Vector3(1.2, 1.2, 1.2),
+        });
+
+        //At the animation key 60
+        wheelKeys.push({
+            frame: 30,
+            value: new Vector3(0.8, 0.8, 0.8),
+        });
+
+        //set the keys
+        animWheel.setKeys(wheelKeys);
+
+        //Link this animation to a bomb
+        instance.animations = [];
+        instance.animations.push(animWheel);
+
+        this._scene.beginAnimation(instance, 0, 60, true);
     }
 
     public setPosition() {
@@ -97,6 +128,20 @@ export class Bomb extends TransformNode {
     public updateServerRate() {}
 
     public delete() {
+        // leave an explosion effect
+        let exp = new Explosion("explosion", this._scene, this._map, this._generator, {
+            type: "explosion",
+            x: this.x,
+            y: this.y,
+            z: this.z,
+            size: this.size,
+        });
+        setTimeout(() => {
+            exp.delete();
+            exp.dispose();
+        }, 500);
+
+        //
         this.playerMesh.dispose();
     }
 }

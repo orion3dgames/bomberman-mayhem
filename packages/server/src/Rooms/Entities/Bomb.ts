@@ -6,7 +6,8 @@ import tiles from "../../../../shared/Data/tiles.json";
 import { Player } from "./Player";
 
 export class Bomb extends Entity {
-    public size: number;
+    @type("int8") size: number = 3;
+
     public owner;
 
     constructor(args, room: GameRoom) {
@@ -20,7 +21,7 @@ export class Bomb extends Entity {
         // set 3 seconds timer
         setTimeout(() => {
             this.trigger();
-        }, 2000);
+        }, 3000);
     }
 
     trigger() {

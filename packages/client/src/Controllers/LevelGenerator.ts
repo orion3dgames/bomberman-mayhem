@@ -76,6 +76,15 @@ export class LevelGenerator {
                 material.specularColor = Color3.Black();
                 this.materials[tile.name] = material;
             }
+
+            // explosion
+            if (tile.id === "E") {
+                const material = new StandardMaterial("material-explosion", this._scene);
+                material.diffuseColor = Color3.FromHexString("#FFA500");
+                material.specularColor = Color3.Black();
+                //material.disableLighting = true;
+                this.materials[tile.name] = material;
+            }
         }
     }
 
@@ -114,7 +123,16 @@ export class LevelGenerator {
             // bomb
             if (tile.id === "T") {
                 const box = MeshBuilder.CreateSphere("box-" + tile.name, { diameter: 0.8 }, this._scene);
-                box.position = new Vector3(0, 0, 0);
+                box.position = new Vector3(0, 0.4, 0);
+                box.material = this.materials[tile.name];
+                box.isVisible = false;
+                this.assets[tile.name] = box;
+            }
+
+            // bomb
+            if (tile.id === "E") {
+                const box = MeshBuilder.CreateBox("box-" + tile.name, { size: tile.width, height: 2 }, this._scene);
+                box.position = new Vector3(0, 0.5, 0);
                 box.material = this.materials[tile.name];
                 box.isVisible = false;
                 this.assets[tile.name] = box;
