@@ -4,6 +4,7 @@ import { Entity } from "./Entities/Entity";
 
 export class GameState extends Schema {
     @type("string") status: "CREATED" | "PLAYING" | "ENDED" = "CREATED";
+    @type("string") map: string = "map_01";
     @type({ map: Player }) players = new MapSchema<Player>();
     @type({ map: Entity }) entities = new MapSchema<Entity>();
 

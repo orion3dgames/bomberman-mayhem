@@ -51,6 +51,7 @@ export class GameRoom extends Room<GameState> {
         this.setMetadata({
             map: e.map,
         }).then(() => {
+            this.state.map = e.map;
             this.changeMap(e.map);
         });
 
@@ -214,6 +215,8 @@ export class GameRoom extends Room<GameState> {
         this.setMetadata({
             map: key,
         }).then(() => {
+            this.state.map = key;
+            this.mapHelper = new MapHelper(this.metadata.map);
             updateLobby(this);
         });
     }

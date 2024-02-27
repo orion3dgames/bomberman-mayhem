@@ -106,6 +106,7 @@ export class RoomScene {
     }
 
     changeMap(key) {
+        console.log("changeMap", key);
         this._game.selectedMap = this._game.maps[key];
         this.updateMaps();
     }
