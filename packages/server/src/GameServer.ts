@@ -50,8 +50,11 @@ export default class GameServer {
             Logger.info("[gameserver] listening on http://localhost:" + port);
         });
 
-        // simulate 200ms latency between server and client.
-        gameServer.simulateLatency(200);
+        // on localhost, simulate bad latency
+        if (process.env.NODE_ENV !== "production") {
+            Logger.info("[gameserver] Simulating 200ms of latency.");
+            gameServer.simulateLatency(200);
+        }
 
         //
         app.use("/colyseus", monitor());

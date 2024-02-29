@@ -1,3 +1,5 @@
+> **DEMO** Please be aware, im using a free instance for the demo and it may take 50 seconds or more to spin up the instance.
+
 # Bomberman Mayhem
 Building a basic multiplayer bomberman type game using babylon.js and colyseus
 
