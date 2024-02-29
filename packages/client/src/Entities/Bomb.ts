@@ -127,20 +127,6 @@ export class Bomb extends TransformNode {
     public updateServerRate() {}
 
     public delete() {
-        // leave an explosion effect
-        let exp = new Explosion("explosion", this._scene, this._map, this._generator, {
-            type: "explosion",
-            x: this.col,
-            y: 0,
-            z: this.row,
-            size: this.size,
-        });
-        setTimeout(() => {
-            exp.delete();
-            exp.dispose();
-        }, 500);
-
-        //
         this.playerMesh.dispose();
     }
 }

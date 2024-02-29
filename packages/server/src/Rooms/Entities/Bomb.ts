@@ -4,6 +4,8 @@ import { Entity } from "./Entity";
 import { CellType } from "../../../../shared/types";
 import tiles from "../../../../shared/Data/tiles.json";
 import { Player } from "./Player";
+import { Cell } from "./Cell";
+import { generateId } from "@colyseus/core/build/utils/Utils";
 
 export class Bomb extends Entity {
     @type("int8") size: number = 3;
@@ -55,18 +57,37 @@ export class Bomb extends Entity {
                 const col = this.col + dir.col * i;
                 const row = this.row + dir.row * i;
 
-                // remove entities
-                this.room.state.cells.forEach((entity) => {
-                    // is cell in blast radius
-                    if (col === entity.col && row === entity.row) {
-                        if (entity.type === CellType.BREAKABLE_WALL) {
-                            // remove entity
-                            this.room.state.cells.delete(entity.sessionId);
-                        }
-                    }
-                });
+                // get cell
+                const cell = this.room.state.cells.get(row + "-" + col);
 
-                // remove any players
+                // stop the explosion if it hit a wall
+                if (cell.type === CellType.WALL) {
+                    return;
+                }
+
+                // if breakable wall, remove and replace it
+                if (cell.type === CellType.BREAKABLE_WALL) {
+                    // remove wall
+                    this.room.state.cells.delete(cell.sessionId);
+
+                    // replace with ground
+                    let newCell = new Cell(
+                        {
+                            sessionId: row + "-" + col,
+                            row: row,
+                            col: col,
+                            type: CellType.GROUND,
+                        },
+                        this.room
+                    );
+                    this.room.state.cells.set(newCell.sessionId, newCell);
+
+                    // stop the explosion if hit anything
+                    return;
+                }
+
+                // bomb hit another bomb so blow that one up too
+                // todo:
             }
         });
 

@@ -16,6 +16,7 @@ import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator"
 import { Cell } from "../Entities/Cell";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Bomb } from "../Entities/Bomb";
+import { Explosion } from "../Entities/Explosion";
 
 export class GameScene {
     public _game: GameController;
@@ -140,7 +141,22 @@ export class GameScene {
             this.entities.set(sessionId, new Bomb(sessionId, this._scene, this, entity));
         });
         this.room.state.bombs.onRemove((entity, sessionId) => {
+            // leave an explosion effect
+            let exp = new Explosion("explosion", this._scene, this._map, this._generator, this.room, {
+                type: "explosion",
+                col: entity.col,
+                row: entity.row,
+                size: entity.size,
+            });
+            setTimeout(() => {
+                exp.delete();
+                exp.dispose();
+            }, 1000);
+
+            //
             this.entities.get(sessionId).delete();
+
+            //
             this.entities.delete(sessionId);
         });
 

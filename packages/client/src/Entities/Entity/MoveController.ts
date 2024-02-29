@@ -1,5 +1,5 @@
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
-import { ServerMsg, PlayerInputs } from "../../../../shared/types";
+import { ServerMsg, PlayerInputs, CellType } from "../../../../shared/types";
 import { Entity } from "../Entity";
 import { PlayerInput } from "../../Controllers/PlayerInput";
 
@@ -87,40 +87,46 @@ export class MoveController {
                 v: this._input.vertical,
             };
 
-            // sent current input to server for processing
-            //if (this.canMove(latestInput)) {
-            this._room.send(ServerMsg.PLAYER_MOVE, latestInput);
+            if (this.canMove(latestInput)) {
+                // sent current input to server for processing
+                this._room.send(ServerMsg.PLAYER_MOVE, latestInput);
 
-            // do client side prediction
-            //this.predictionMove(latestInput);
-            //}
+                // do client side prediction
+                this.predictionMove(latestInput);
+            }
         }
     }
 
-    public tween() {
-        // continuously lerp between current position and next position
-        this._player.position = Vector3.Lerp(this._player.position, this.nextPosition, 0.5);
-        this._player.playerMesh.rotation = this.nextRotation;
+    public canMove(playerInput) {
+        let speed = 1;
+        let newCol = this.nextPosition.x - playerInput.h * speed;
+        let newRow = this.nextPosition.z - playerInput.v * speed;
+        let cell = this._room.state.cells.get(newRow + "-" + newCol);
+        if (cell && cell.type === CellType.GROUND) {
+            return true;
+        }
+        return false;
     }
 
     public move(playerInput: PlayerInputs): void {
-        if (this.isCurrentPlayer) {
-            // save current position
-            let oldX = this.nextPosition.x;
-            let oldY = this.nextPosition.y;
-            let oldZ = this.nextPosition.z;
-            const newRotY = Math.atan2(playerInput.h, playerInput.v);
-
+        if (this.isCurrentPlayer && this.canMove(playerInput)) {
+            // calculate position
             let speed = 1;
-            let newX = oldX - playerInput.h * speed;
-            let newY = 0;
-            let newZ = oldZ - playerInput.v * speed;
-
-            // check it fits in navmesh
-            // and no entities already there
-            this.nextPosition.x = newX;
-            this.nextPosition.z = newZ;
+            let newCol = this.nextPosition.x - playerInput.h * speed;
+            let newRow = this.nextPosition.z - playerInput.v * speed;
+            const newRotY = Math.atan2(playerInput.h, playerInput.v);
+            // apply new position
+            this.nextPosition.x = newCol;
+            this.nextPosition.z = newRow;
             this.nextRotation.y = this.nextRotation.y + (newRotY - this.nextRotation.y);
         }
+    }
+
+    /**
+     * continuously lerp between current position and next position
+     */
+    public tween() {
+        this._player.position = Vector3.Lerp(this._player.position, this.nextPosition, 0.5);
+        this._player.playerMesh.rotation = this.nextRotation;
     }
 }

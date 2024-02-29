@@ -73,7 +73,6 @@ export class Cell extends TransformNode {
     }
 
     public spawn() {
-        console.log("spawn", this);
         // create instance
         let instance = this._generator.assets[this.type].createInstance("box-" + this.col + "-" + this.row);
         instance.position = new Vector3(0, 0, 0);

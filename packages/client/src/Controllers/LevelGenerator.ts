@@ -129,12 +129,13 @@ export class LevelGenerator {
                 this.assets[tile.name] = box;
             }
 
-            // bomb
+            // explosion
             if (tile.id === "E") {
                 const box = MeshBuilder.CreateBox("box-" + tile.name, { size: tile.width, height: 2 }, this._scene);
                 box.position = new Vector3(0, 0.5, 0);
                 box.material = this.materials[tile.name];
                 box.isVisible = false;
+                box.visibility = 0.5;
                 this.assets[tile.name] = box;
             }
         }
@@ -143,7 +144,7 @@ export class LevelGenerator {
     public async generateMeshes(map: string) {
         this._map.mapData.forEach((col, colId) => {
             col.forEach((tileID, rowId) => {
-                this.createInstance(tileID, colId, rowId);
+                //this.createInstance(tileID, colId, rowId);
             });
         });
     }

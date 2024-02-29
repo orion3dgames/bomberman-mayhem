@@ -2,25 +2,28 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { Scene } from "@babylonjs/core/scene";
 import { Animation } from "@babylonjs/core/Animations/animation";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
+import { CellType } from "../../../shared/types";
 
 export class Explosion extends TransformNode {
     public _generator;
     public _map;
+    public _room;
 
     public playerMesh;
     public mesh1;
     public mesh2;
 
-    public type;
+    public type: CellType;
     public size: number = 1;
     public tile;
     public col: number = 0;
     public row: number = 0;
 
-    constructor(name: string, scene: Scene, map, generator, data) {
+    constructor(name: string, scene: Scene, map, generator, room, data) {
         super(name, scene);
 
         // set variables
+        this._room = room;
         this._scene = scene;
         this._map = map;
         this._generator = generator;
@@ -39,65 +42,84 @@ export class Explosion extends TransformNode {
     }
 
     public spawn() {
-        let minSize = this.size;
-        let maxSize = this.size * 2 + 1;
+        const dirs = [
+            {
+                // up
+                col: -1,
+                row: 0,
+                direction: "left",
+            },
+            {
+                // down
+                col: 1,
+                row: 0,
+                direction: "righ",
+            },
+            {
+                // left
+                col: 0,
+                row: -1,
+                direction: "down",
+            },
+            {
+                // right
+                col: 0,
+                row: 1,
+                direction: "up",
+            },
+        ];
+        let addedMiddleCell = false;
 
-        // create mesh
-        let instanceX = this._generator.assets["explosion"].createInstance("exp-" + this.col + "-" + this.row);
-        instanceX.position = new Vector3(0, 0, 0);
-        instanceX.scaling = new Vector3(maxSize, 1, 1);
-        instanceX.receiveShadows = true;
-        instanceX.parent = this;
-        instanceX.freezeWorldMatrix();
+        // for every direction
+        dirs.forEach((dir) => {
+            // for distance
+            for (let i = 0; i <= this.size; i++) {
+                const col = this.col + dir.col * i;
+                const row = this.row + dir.row * i;
 
-        // create mesh
-        let instanceZ = this._generator.assets["explosion"].createInstance("exp-" + this.col + "-" + this.row);
-        instanceZ.position = new Vector3(0, 0, 0);
-        instanceZ.scaling = new Vector3(1, 1, maxSize);
-        instanceZ.receiveShadows = true;
-        instanceZ.parent = this;
-        instanceZ.freezeWorldMatrix();
+                // get cell
+                const cell = this._room.state.cells.get(row + "-" + col);
 
-        this.mesh1 = instanceX;
-        this.mesh2 = instanceZ;
+                console.log(dir.direction, cell.type, row, col);
 
-        //Animate the bomb
-        const animWheel = new Animation("wheelAnimation", "opacity", 60, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
+                // dont show explosion on hard walls
+                if (cell.type === CellType.WALL) {
+                    console.log("--> is a wall, return");
+                    return;
+                }
 
-        const wheelKeys = [];
+                // dont show explosion on soft walls
+                if (cell.type === CellType.BREAKABLE_WALL) {
+                    console.log("--> is a breakable wall, return");
+                    return;
+                }
 
-        //At the animation key 0, the value of rotation.y is 0
-        wheelKeys.push({
-            frame: 0,
-            value: 1,
+                if (i === 0 && addedMiddleCell) {
+                    console.log("--> already added the middle cell");
+                    continue;
+                }
+
+                // show explosion
+                let newRow = row - this.row;
+                let newCol = col - this.col;
+                console.log("--> add explosion", newRow, newCol);
+                let instanceX = this._generator.assets["explosion"].clone("exp-" + row + "-" + col);
+                instanceX.position = new Vector3(newCol, 0, newRow);
+                instanceX.receiveShadows = true;
+                instanceX.parent = this;
+                instanceX.isVisible = true;
+                instanceX.freezeWorldMatrix();
+
+                if (i === 0 && !addedMiddleCell) {
+                    addedMiddleCell = true;
+                }
+            }
         });
-
-        //At the animation key 30
-        wheelKeys.push({
-            frame: 60,
-            value: 0,
-        });
-
-        //set the keys
-        animWheel.setKeys(wheelKeys);
-
-        //Link this animation to a bomb
-        this.mesh1.animations = [];
-        this.mesh1.animations.push(animWheel);
-        this._scene.beginAnimation(this.mesh1, 0, 60, false);
-
-        //Link this animation to a bomb
-        this.mesh2.animations = [];
-        this.mesh2.animations.push(animWheel);
-        this._scene.beginAnimation(this.mesh2, 0, 60, false);
     }
 
     public setPosition() {
         this.position = new Vector3(this.col, 0, this.row);
     }
 
-    public delete() {
-        this.mesh1.dispose();
-        this.mesh2.dispose();
-    }
+    public delete() {}
 }
