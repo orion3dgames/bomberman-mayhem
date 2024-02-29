@@ -14,6 +14,11 @@ Building a basic multiplayer bomberman type game using babylon.js and colyseus
 ## ASCII Map Maker
 I use https://stmn.github.io/ascii-map-editor/ to generate all the maps.
 
+Cell types currently available: 
+- W (wall)
+- S (spwanpoint)
+- G (ground)
+
 ## Requirements
 - Download and install [Node.js LTS](https://nodejs.org/en/download/)
 - Clone or download this repository.
