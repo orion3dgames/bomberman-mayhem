@@ -30,6 +30,7 @@ export enum CellType {
     GROUND = 0,
     WALL,
     BREAKABLE_WALL,
+    EXPLOSION,
     PLAYER,
     BOMB,
 }

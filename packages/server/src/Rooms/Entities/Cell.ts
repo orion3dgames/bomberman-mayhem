@@ -2,22 +2,18 @@ import { Schema, type } from "@colyseus/schema";
 import { GameRoom } from "../GameRoom";
 import { CellType } from "../../../../shared/types";
 
-export class Entity extends Schema {
+export class Cell extends Schema {
     @type("string") sessionId: string;
     @type("int8") type: CellType;
     @type("int8") col: number = 0;
     @type("int8") row: number = 0;
-
-    public room: GameRoom;
+    @type("string") playerId: string; // ID of the player occupying the cell (if any)
+    @type("string") bombId: string; // ID of the bomb occupying the cell (if any)
 
     constructor(args, room: GameRoom) {
-        super();
-
-        this.room = room;
+        super(args, room);
 
         // add spawn data
         Object.assign(this, args);
     }
-
-    public update(dt) {}
 }

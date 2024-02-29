@@ -32,9 +32,8 @@ export class Wall extends TransformNode {
     public sessionId: string = "";
     public type: string = "";
     public name: string = "";
-    public x: number = 0;
-    public y: number = 0;
-    public z: number = 0;
+    public col: number = 0;
+    public row: number = 0;
 
     constructor(name: string, scene: Scene, gameScene: GameScene, entity, isCurrentPlayer = false) {
         super(name, scene);
@@ -76,7 +75,7 @@ export class Wall extends TransformNode {
     public spawn() {
         console.log("spawn", this);
         // create instance
-        let instance = this._generator.assets["breakable_wall"].createInstance("box-" + this.x + "-" + this.y);
+        let instance = this._generator.assets["breakable_wall"].createInstance("box-" + this.col + "-" + this.row);
         instance.position = new Vector3(0, 0, 0);
         instance.receiveShadows = true;
         instance.parent = this;
@@ -88,7 +87,7 @@ export class Wall extends TransformNode {
     }
 
     public setPosition() {
-        this.position = new Vector3(this.x, this.y, this.z);
+        this.position = new Vector3(this.col, 0, this.row);
     }
 
     public update(delta: number) {}

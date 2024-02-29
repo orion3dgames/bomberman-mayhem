@@ -30,9 +30,8 @@ export class Bomb extends TransformNode {
     public sessionId: string = "";
     public type: string = "";
     public name: string = "";
-    public x: number = 0;
-    public y: number = 0;
-    public z: number = 0;
+    public col: number = 0;
+    public row: number = 0;
     public size: number = 1;
 
     public nextScale: number;
@@ -76,7 +75,7 @@ export class Bomb extends TransformNode {
 
     public spawn() {
         // create mesh
-        let instance = this._generator.assets["bomb"].createInstance("bomb-" + this.x + "-" + this.y);
+        let instance = this._generator.assets["bomb"].createInstance("bomb-" + this.col + "-" + this.row);
         instance.position = new Vector3(0, 0, 0);
         instance.receiveShadows = true;
         instance.parent = this;
@@ -120,7 +119,7 @@ export class Bomb extends TransformNode {
     }
 
     public setPosition() {
-        this.position = new Vector3(this.x, this.y, this.z);
+        this.position = new Vector3(this.col, 0, this.row);
     }
 
     public update(delta: number) {}
@@ -131,9 +130,9 @@ export class Bomb extends TransformNode {
         // leave an explosion effect
         let exp = new Explosion("explosion", this._scene, this._map, this._generator, {
             type: "explosion",
-            x: this.x,
-            y: this.y,
-            z: this.z,
+            x: this.col,
+            y: 0,
+            z: this.row,
             size: this.size,
         });
         setTimeout(() => {

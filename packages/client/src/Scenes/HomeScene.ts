@@ -190,7 +190,7 @@ export class HomeScene {
         // header
 
         // logo
-        var imgLogo = new Image("imgLogo", "./images/logo.png");
+        var imgLogo = new Image("imgLogo", "./images/logo2.png");
         imgLogo.stretch = Image.STRETCH_UNIFORM;
         imgLogo.top = "10px";
         imgLogo.width = 1;

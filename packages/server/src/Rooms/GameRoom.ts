@@ -7,7 +7,6 @@ import { MapHelper } from "../../../shared/MapHelper";
 
 import { generateRoomId } from "../Utils/Utils";
 import { Player } from "./Entities/Player";
-import { Wall } from "./Entities/Wall";
 import { Bomb } from "./Entities/Bomb";
 
 export class GameRoom extends Room<GameState> {
@@ -86,16 +85,14 @@ export class GameRoom extends Room<GameState> {
 
         // find spawnpoint
         let spawnpoint = this.mapHelper.setSpawnPoint(client.sessionId);
-        console.log(spawnpoint);
 
         let player = new Player(
             {
                 sessionId: client.sessionId,
                 name: client.auth.name,
                 admin: this.state.players.size == 0,
-                x: spawnpoint.position.x,
-                y: spawnpoint.position.y,
-                z: spawnpoint.position.z,
+                col: spawnpoint.col,
+                row: spawnpoint.row,
             },
             this
         );
@@ -190,15 +187,14 @@ export class GameRoom extends Room<GameState> {
                         {
                             sessionId: generateId(),
                             owner: playerState.sessionId,
-                            x: playerState.x,
-                            y: playerState.y,
-                            z: playerState.z,
+                            col: playerState.col,
+                            row: playerState.row,
                             size: playerState.explosion_size,
                         },
                         this
                     );
 
-                    this.state.entities.set(bomb.sessionId, bomb);
+                    this.state.bombs.set(bomb.sessionId, bomb);
 
                     playerState.bombs--;
                 }
@@ -207,8 +203,7 @@ export class GameRoom extends Room<GameState> {
     }
 
     public generateLevel() {
-        // create map
-        this.mapHelper.generateBreakableCells(this);
+        this.mapHelper.generateServerMap(this);
     }
 
     public changeMap(key) {

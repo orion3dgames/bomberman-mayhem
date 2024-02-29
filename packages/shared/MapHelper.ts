@@ -1,7 +1,7 @@
 import tiles from "./Data/tiles.json";
 import maps from "./Data/maps.json";
-import { ITiles, Tile } from "./types";
-import { Wall } from "../server/src/Rooms/Entities/Wall";
+import { CellType, ITiles, Tile } from "./types";
+import { Cell } from "../server/src/Rooms/Entities/Cell";
 
 export class MapHelper {
     public mapData;
@@ -11,6 +11,7 @@ export class MapHelper {
     public spawnPoints: any = [];
     public baseCells: any = [];
     public cells: any = [];
+    public shadow_map: any = [];
 
     constructor(mapName: string = "map_01") {
         // get map data
@@ -44,8 +45,8 @@ export class MapHelper {
      * @param col
      * @returns boolean
      */
-    public isTileAvailable(row, col): boolean {
-        if (this.cells[row][col].isWalkable) {
+    public isTileAvailable(col, row): boolean {
+        if (this.cells[col][row].isWalkable) {
             return true;
         }
         return false;
@@ -99,19 +100,16 @@ export class MapHelper {
         if (foundTile.id == "S") {
             this.spawnPoints.push({
                 player: false,
-                position: {
-                    x: rowId,
-                    y: 0,
-                    z: colId,
-                },
+                col: colId,
+                row: rowId,
             });
         }
 
         // add to map cells
-        if (!this.cells[rowId]) {
-            this.cells[rowId] = [];
+        if (!this.cells[colId]) {
+            this.cells[colId] = [];
         }
-        this.cells[rowId][colId] = foundTile;
+        this.cells[colId][rowId] = foundTile;
     }
 
     //////////////////////////////////////////
@@ -122,27 +120,46 @@ export class MapHelper {
 
     public updateCell(colId, rowId, type) {}
 
-    public generateBreakableCells(room) {
-        // create breakable walls
-        this.cells.forEach((cols, colId) => {
-            cols.forEach((row, rowId) => {
-                // 50% chance empty ground will be a soft wall
-                if (row.id === " " && Math.random() < 0.5) {
-                    // add wall
-                    let wall = new Wall(
-                        {
-                            sessionId: "wall-" + colId + "-" + rowId,
-                            x: colId,
-                            y: 0,
-                            z: rowId,
-                        },
-                        room
-                    );
-                    room.state.entities.set(wall.sessionId, wall);
+    public generateServerMap(room) {
+        this.mapData.forEach((row, rowId) => {
+            row.forEach((tileID, colId) => {
+                // get tile details
+                let foundTile = this.findTile(tileID) as Tile;
 
-                    // update cells
-                    this.cells[colId][rowId] = tiles.breakable_wall;
+                // tile not found
+                if (!foundTile) console.error("Tile: " + tileID + " does not exist, map data is corrupted");
+
+                let sessionId = "" + rowId + "-" + colId;
+                let type = CellType.GROUND;
+
+                // if ground
+                if (tileID === " " && Math.random() < 0.5) {
+                    type = CellType.BREAKABLE_WALL;
                 }
+
+                // if wall
+                if (tileID === "W") {
+                    type = CellType.WALL;
+                }
+
+                let wall = new Cell(
+                    {
+                        sessionId: sessionId,
+                        row: rowId,
+                        col: colId,
+                        type: type,
+                    },
+                    room
+                );
+
+                // add entity
+                room.state.cells.set(sessionId, wall);
+
+                // update shadowmap
+                if (!this.shadow_map[rowId]) {
+                    this.shadow_map[rowId] = [];
+                }
+                this.shadow_map[rowId][colId] = type;
             });
         });
     }

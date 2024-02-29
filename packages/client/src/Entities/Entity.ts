@@ -36,9 +36,8 @@ export class Entity extends TransformNode {
     public sessionId: string = "";
     public type;
     public name: string = "";
-    public x: number = 0;
-    public y: number = 0;
-    public z: number = 0;
+    public col: number = 0;
+    public row: number = 0;
 
     constructor(name: string, scene: Scene, gameScene: GameScene, entity, isCurrentPlayer = false) {
         super(name, scene);
@@ -147,8 +146,7 @@ export class Entity extends TransformNode {
 
     public isTileAvailable(x, z) {
         for (let [key, element] of this._entities) {
-            if (element._entity.x === x && element._entity.z === z) {
-                console.log("CANNOT MOVE TO: ", x, z, this._entities);
+            if (element._entity.col === x && element._entity.row === z) {
                 return false;
             }
         }

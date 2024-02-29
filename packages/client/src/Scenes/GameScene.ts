@@ -15,6 +15,7 @@ import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
 import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
 import { Wall } from "../Entities/Wall";
 import { Bomb } from "../Entities/Bomb";
+import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 
 export class GameScene {
     public _game: GameController;
@@ -78,6 +79,9 @@ export class GameScene {
 
         // start UI
         this._ui = new PlayerUI(this._scene, this._engine, this);
+
+        //
+        const plane = MeshBuilder.CreatePlane("plane", { width: 2, height: 2 }, scene);
 
         // setup colyseus room
         // hack for devlopement

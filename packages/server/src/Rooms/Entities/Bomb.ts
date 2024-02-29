@@ -28,23 +28,23 @@ export class Bomb extends Entity {
         const dirs = [
             {
                 // up
-                x: -1,
-                z: 0,
+                col: -1,
+                row: 0,
             },
             {
                 // down
-                x: 1,
-                z: 0,
+                col: 1,
+                row: 0,
             },
             {
                 // left
-                x: 0,
-                z: -1,
+                col: 0,
+                row: -1,
             },
             {
                 // right
-                x: 0,
-                z: 1,
+                col: 0,
+                row: 1,
             },
         ];
 
@@ -52,13 +52,13 @@ export class Bomb extends Entity {
         dirs.forEach((dir) => {
             // for distance
             for (let i = 0; i <= this.size; i++) {
-                const col = this.x + dir.x * i;
-                const row = this.z + dir.z * i;
+                const col = this.col + dir.col * i;
+                const row = this.row + dir.row * i;
 
                 // remove entities
                 this.room.state.entities.forEach((entity) => {
                     // if breakable wall
-                    if (entity.type === CellType.BREAKABLE_WALL && col === entity.x && row === entity.z) {
+                    if (entity.type === CellType.BREAKABLE_WALL && col === entity.col && row === entity.row) {
                         // remove entity
                         this.room.state.entities.delete(entity.sessionId);
 
@@ -81,7 +81,7 @@ export class Bomb extends Entity {
         playerState.bombs++;
 
         // update cell
-        this.room.mapHelper.cells[this.x][this.z] = tiles.ground;
+        this.room.mapHelper.cells[this.col][this.row] = tiles.ground;
 
         // remove bomb
         this.room.state.entities.delete(this.sessionId);
