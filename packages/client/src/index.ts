@@ -65,7 +65,7 @@ class App {
         this.game = new GameController(this);
 
         // set default scene
-        this.game.setScene(SceneName.GAME);
+        this.game.setScene(SceneName.HOME);
 
         // main render loop & state machine
         await this._render();
