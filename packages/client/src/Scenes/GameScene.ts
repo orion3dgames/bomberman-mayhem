@@ -13,9 +13,9 @@ import { Entity } from "../Entities/Entity";
 import { PlayerUI } from "../Controllers/PlayerUI";
 import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
 import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
-import { Wall } from "../Entities/Wall";
-import { Bomb } from "../Entities/Bomb";
+import { Cell } from "../Entities/Cell";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
+import { Bomb } from "../Entities/Bomb";
 
 export class GameScene {
     public _game: GameController;
@@ -124,18 +124,22 @@ export class GameScene {
             this.entities.delete(sessionId);
         });
 
-        ////////////////////// ENTITIES
+        ////////////////////// CELLS
         // on new entity
-        this.room.state.entities.onAdd((entity, sessionId) => {
-            if (entity.type === CellType.BREAKABLE_WALL) {
-                this.entities.set(sessionId, new Wall(sessionId, this._scene, this, entity));
-            }
-            if (entity.type === CellType.BOMB) {
-                this.entities.set(sessionId, new Bomb(sessionId, this._scene, this, entity));
-            }
+        this.room.state.cells.onAdd((entity, sessionId) => {
+            this.entities.set(sessionId, new Cell(sessionId, this._scene, this, entity));
+        });
+        this.room.state.cells.onRemove((entity, sessionId) => {
+            this.entities.get(sessionId).delete();
+            this.entities.delete(sessionId);
         });
 
-        this.room.state.entities.onRemove((entity, sessionId) => {
+        ////////////////////// BOMBS
+        // on new entity
+        this.room.state.bombs.onAdd((entity, sessionId) => {
+            this.entities.set(sessionId, new Bomb(sessionId, this._scene, this, entity));
+        });
+        this.room.state.bombs.onRemove((entity, sessionId) => {
             this.entities.get(sessionId).delete();
             this.entities.delete(sessionId);
         });

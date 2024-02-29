@@ -27,12 +27,13 @@ export interface ITiles {
 }
 
 export enum CellType {
-    GROUND = 0,
-    WALL,
-    BREAKABLE_WALL,
-    EXPLOSION,
-    PLAYER,
-    BOMB,
+    GROUND = "ground",
+    SPAWNPOINT = "spawnpoint",
+    WALL = "wall",
+    BREAKABLE_WALL = "breakable_wall",
+    EXPLOSION = "explosion",
+    PLAYER = "player",
+    BOMB = "bomb",
 }
 
 ///////////////////////////////

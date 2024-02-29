@@ -4,7 +4,7 @@ import { CellType } from "../../../../shared/types";
 
 export class Entity extends Schema {
     @type("string") sessionId: string;
-    @type("int8") type: CellType;
+    @type("string") type: CellType;
     @type("int8") col: number = 0;
     @type("int8") row: number = 0;
 

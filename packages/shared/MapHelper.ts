@@ -59,10 +59,10 @@ export class MapHelper {
      * @param z
      * @returns
      */
-    public isCellAvailable(entities, x, z) {
-        for (let [key, element] of entities) {
-            if (element.x === x && element.z === z) {
-                console.log("CANNOT MOVE TO: ", x, z);
+    public isCellAvailable(cells, row, col) {
+        for (let [key, element] of cells) {
+            if (element.row === row && element.col === col && !element.cellInfo.isWalkable) {
+                console.log("CANNOT MOVE TO: ", element.type, row, col);
                 return false;
             }
         }
@@ -133,7 +133,7 @@ export class MapHelper {
                 let type = CellType.GROUND;
 
                 // if ground
-                if (tileID === " " && Math.random() < 0.5) {
+                if (tileID === " " && Math.random() < 0.4) {
                     type = CellType.BREAKABLE_WALL;
                 }
 

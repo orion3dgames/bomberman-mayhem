@@ -1,7 +1,9 @@
 import { Schema, type } from "@colyseus/schema";
 import { Entity } from "./Entity";
 import { GameRoom } from "../GameRoom";
-import { CellType } from "../../../../shared/types";
+import { CellType, ServerMsg } from "../../../../shared/types";
+import { generateId } from "@colyseus/core";
+import { Bomb } from "./Bomb";
 
 export class Player extends Entity {
     @type("string") name: string;
@@ -39,12 +41,32 @@ export class Player extends Entity {
 
         const newRotY = Math.atan2(playerInput.h, playerInput.v);
 
-        // check if next position is within allowed cells
-        if (this.room.mapHelper.isTileAvailable(newCol, newRow) && this.room.mapHelper.isCellAvailable(this.room.state.entities, newCol, newRow)) {
+        // check if next position is within allowed cell
+        if (this.room.mapHelper.isCellAvailable(this.room.state.cells, newRow, newCol)) {
             this.col = newCol;
             this.row = newRow;
             this.rot = this.rot + (newRotY - this.rot);
             this.sequence = playerInput.seq;
+        }
+    }
+
+    placeBomb(data) {
+        if (this.bombs > 0) {
+            console.log(ServerMsg[ServerMsg.PLACE_BOMB], data);
+            let bomb = new Bomb(
+                {
+                    sessionId: generateId(),
+                    owner: this.sessionId,
+                    col: this.col,
+                    row: this.row,
+                    size: this.explosion_size,
+                },
+                this.room
+            );
+
+            this.room.state.bombs.set(bomb.sessionId, bomb);
+
+            this.bombs--;
         }
     }
 }

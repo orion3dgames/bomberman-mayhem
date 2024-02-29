@@ -181,23 +181,7 @@ export class GameRoom extends Room<GameState> {
             }
 
             if (type === ServerMsg.PLACE_BOMB) {
-                if (playerState.bombs > 0) {
-                    console.log(ServerMsg[ServerMsg.PLACE_BOMB], data);
-                    let bomb = new Bomb(
-                        {
-                            sessionId: generateId(),
-                            owner: playerState.sessionId,
-                            col: playerState.col,
-                            row: playerState.row,
-                            size: playerState.explosion_size,
-                        },
-                        this
-                    );
-
-                    this.state.bombs.set(bomb.sessionId, bomb);
-
-                    playerState.bombs--;
-                }
+                playerState.placeBomb(data);
             }
         });
     }

@@ -36,7 +36,7 @@ export class MoveController {
     }
 
     public setPositionAndRotation(entity): void {
-        this.nextPosition = new Vector3(entity.row, 0, entity.col);
+        this.nextPosition = new Vector3(entity.col, 0, entity.row);
         this.nextRotation = new Vector3(0, entity.rot, 0);
     }
 

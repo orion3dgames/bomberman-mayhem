@@ -56,17 +56,14 @@ export class Bomb extends Entity {
                 const row = this.row + dir.row * i;
 
                 // remove entities
-                this.room.state.entities.forEach((entity) => {
-                    // if breakable wall
-                    if (entity.type === CellType.BREAKABLE_WALL && col === entity.col && row === entity.row) {
-                        // remove entity
-                        this.room.state.entities.delete(entity.sessionId);
-
-                        // update cell
-                        this.room.mapHelper.cells[col][row] = tiles.ground;
+                this.room.state.cells.forEach((entity) => {
+                    // is cell in blast radius
+                    if (col === entity.col && row === entity.row) {
+                        if (entity.type === CellType.BREAKABLE_WALL) {
+                            // remove entity
+                            this.room.state.cells.delete(entity.sessionId);
+                        }
                     }
-                    // if bomb
-                    // trigger the bomb also
                 });
 
                 // remove any players
@@ -77,13 +74,11 @@ export class Bomb extends Entity {
     }
 
     public delete() {
+        // increase player available bombs
         const playerState: Player = this.room.state.players.get(this.owner) as Player;
         playerState.bombs++;
 
-        // update cell
-        this.room.mapHelper.cells[this.col][this.row] = tiles.ground;
-
         // remove bomb
-        this.room.state.entities.delete(this.sessionId);
+        this.room.state.bombs.delete(this.sessionId);
     }
 }
