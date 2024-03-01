@@ -6,7 +6,10 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 export class PlayerCamera {
     private _scene: Scene;
     private _cameraRoot;
-    public camera;
+    public camera: UniversalCamera;
+
+    public shakeTimer;
+    public shouldShake: boolean = false;
 
     constructor(scene) {
         this._scene = scene;
@@ -27,6 +30,25 @@ export class PlayerCamera {
         camera.parent = camYAxis;
 
         this.camera = camera;
+    }
+
+    shake() {
+        this.shouldShake = true;
+        var projectionMatrix = this.camera.getProjectionMatrix();
+        var r = projectionMatrix.getRow(3);
+        var t = 0;
+        this._scene.registerBeforeRender(() => {
+            if (this.shouldShake === true) {
+                r.x += Math.cos(t) * 0.3;
+                r.y += Math.sin(t) * 0.3;
+                projectionMatrix.setRowFromFloats(3, r.x, r.y, r.z, r.w);
+                t += 81337.18;
+            }
+        });
+
+        this.shakeTimer = setTimeout(() => {
+            this.shouldShake = false;
+        }, 300);
     }
 
     tween(player) {

@@ -75,7 +75,8 @@ export class Bomb extends TransformNode {
 
     public spawn() {
         // create mesh
-        let instance = this._generator.assets["bomb"].createInstance("bomb-" + this.col + "-" + this.row);
+        let mesh = this._generator.bombModel;
+        let instance = mesh.createInstance("bomb-" + this.col + "-" + this.row);
         instance.position = new Vector3(0, 0, 0);
         instance.receiveShadows = true;
         instance.parent = this;

@@ -74,6 +74,7 @@ export class GameScene {
         let chosenMap = this._game.selectedMap.key;
         this._map = new MapHelper(chosenMap);
         this._generator = new LevelGenerator(this._scene, this._map, shadowGenerator);
+        await this._generator.loadModels();
 
         // start camera
         this._camera = new PlayerCamera(this._scene);
@@ -142,7 +143,7 @@ export class GameScene {
         });
         this.room.state.bombs.onRemove((entity, sessionId) => {
             // leave an explosion effect
-            let exp = new Explosion("explosion", this._scene, this._map, this._generator, this.room, {
+            let exp = new Explosion("explosion", this._scene, this._map, this._generator, this.room, this._camera, {
                 type: "explosion",
                 col: entity.col,
                 row: entity.row,

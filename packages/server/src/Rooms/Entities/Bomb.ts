@@ -2,15 +2,15 @@ import { Schema, type } from "@colyseus/schema";
 import { GameRoom } from "../GameRoom";
 import { Entity } from "./Entity";
 import { CellType } from "../../../../shared/types";
-import tiles from "../../../../shared/Data/tiles.json";
 import { Player } from "./Player";
 import { Cell } from "./Cell";
-import { generateId } from "@colyseus/core/build/utils/Utils";
 
 export class Bomb extends Entity {
     @type("int8") size: number = 3;
 
     public owner;
+    public timeoutTimer;
+    public timeout: number = 3000;
 
     constructor(args, room: GameRoom) {
         super(args, room);
@@ -21,12 +21,24 @@ export class Bomb extends Entity {
         this.type = CellType.BOMB;
 
         // set 3 seconds timer
-        setTimeout(() => {
+        this.timeoutTimer = setTimeout(() => {
             this.trigger();
-        }, 3000);
+        }, this.timeout);
     }
 
     trigger() {
+        // remove any timers
+        if (this.timeoutTimer) {
+            clearTimeout(this.timeoutTimer);
+        }
+
+        // clear bomb from cell
+        let currentCell = this.room.state.cells.get(this.row + "-" + this.col);
+        if (currentCell) {
+            currentCell.bombId = "";
+        }
+
+        //
         const dirs = [
             {
                 // up
@@ -87,7 +99,10 @@ export class Bomb extends Entity {
                 }
 
                 // bomb hit another bomb so blow that one up too
-                // todo:
+                if (cell.bombId) {
+                    let bomb = this.room.state.bombs.get(cell.bombId);
+                    setTimeout(() => bomb.trigger(), 200); // slight delay
+                }
             }
         });
 

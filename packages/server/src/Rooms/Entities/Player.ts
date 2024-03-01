@@ -15,11 +15,13 @@ export class Player extends Entity {
 
     @type("int8") score: number = 0;
     @type("int8") bombs: number;
+    @type("int8") health: number;
 
     @type("int16") sequence: number = 0;
     @type("float32") rot: number = 0;
 
     public explosion_size: number;
+    public spawnPoint;
 
     constructor(args, room: GameRoom) {
         super(args, room);
@@ -28,17 +30,16 @@ export class Player extends Entity {
         this.type = CellType.PLAYER;
 
         // set default
-        this.bombs = 1; // 1 bomb by default
+        this.health = 1; // default health
+        this.bombs = 100; // 1 bomb by default
         this.explosion_size = 2; //
     }
 
     move(playerInput) {
-        console.log(playerInput);
-
+        // calculate new position
         let speed = 1;
         let newCol = this.col - playerInput.h * speed;
         let newRow = this.row - playerInput.v * speed;
-
         const newRotY = Math.atan2(playerInput.h, playerInput.v);
 
         // check if next position is within allowed cell
@@ -47,15 +48,24 @@ export class Player extends Entity {
             this.row = newRow;
             this.rot = this.rot + (newRotY - this.rot);
             this.sequence = playerInput.seq;
+
+            //
         }
     }
 
     placeBomb(data) {
         if (this.bombs > 0) {
-            console.log(ServerMsg[ServerMsg.PLACE_BOMB], data);
+            let sessionId = "bomb-" + this.row + "-" + this.col;
+
+            // make sure a bomb is not already in this location
+            if (this.room.state.bombs.get(sessionId)) {
+                return false;
+            }
+
+            // add bomb
             let bomb = new Bomb(
                 {
-                    sessionId: generateId(),
+                    sessionId: sessionId,
                     owner: this.sessionId,
                     col: this.col,
                     row: this.row,
@@ -63,9 +73,15 @@ export class Player extends Entity {
                 },
                 this.room
             );
-
             this.room.state.bombs.set(bomb.sessionId, bomb);
 
+            // update cell
+            let cell = this.room.state.cells.get(this.row + "-" + this.col);
+            if (cell) {
+                cell.bombId = sessionId;
+            }
+
+            // decrease player available bombs
             this.bombs--;
         }
     }

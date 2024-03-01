@@ -5,13 +5,20 @@ Building a basic multiplayer bomberman type game using babylon.js and colyseus
 
 ## Rules
 - Player move around using keyboard arrows
-- Player can place bombs (1 at a time) by pressing teh scape key on the keyboard
+- Each player starts with 1 bomb and 1 heart
+- Player can place bombs (1 at a time) by pressing the scape key on the keyboard
 - Bomb will explode automatically after 3 seconds (bomb explosion radius is of 4 squares)
-- Anyone in the explosion radius will die
+- Anyone in the explosion radius will lose 1 health
+- Player can find powerups after breaking wall using they bombs
+- Anyone players who gets under 1 health will be considered dead
 - Last player alive will be declared the winner
 
+## Power Ups Available
+- Heart (will give player 1 extra health) 
+- Bomb (will give player 1 extra bomb)
+
 ## Current Progress
-- Basic framework is in place (21-02-2024)
+- WIP
 
 ## ASCII Map Maker
 I use https://stmn.github.io/ascii-map-editor/ to generate all the maps.
@@ -36,3 +43,6 @@ Cell types currently available:
 
 > The client should be accessible at [`http://localhost:8080`](http://localhost:8080)
 > The server should be available locally at [http://localhost:3000](http://localhost:3000)
+
+## Credits
+"Cartoon Bomb💣" (https://skfb.ly/o6QoW) by CioJay is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).

@@ -7,6 +7,8 @@ import { MapHelper } from "../../../shared/MapHelper";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
 import { Tile } from "../../../shared/types";
+import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader";
+import { Mesh } from "@babylonjs/core/Meshes/mesh";
 
 export class LevelGenerator {
     private _scene: Scene;
@@ -19,6 +21,7 @@ export class LevelGenerator {
     private offset_z: number = 0;
 
     public instances = [];
+    public bombModel;
 
     constructor(scene: Scene, map: MapHelper, shadow: ShadowGenerator) {
         //
@@ -34,6 +37,24 @@ export class LevelGenerator {
 
         // generate level
         this.generateMeshes(this._map.mapData);
+    }
+
+    public async loadModels() {
+        let model = await SceneLoader.ImportMeshAsync("", "models/", "bomb_01.glb");
+        this.bombModel = this.mergeMesh("bomb_01", model.meshes[0]);
+        console.log(this.bombModel);
+    }
+
+    mergeMesh(key, mesh) {
+        // pick what you want to merge
+        const allChildMeshes = mesh.getChildTransformNodes(true)[0].getChildMeshes(false);
+
+        // multiMaterial = true
+        const merged = Mesh.MergeMeshes(allChildMeshes, false, true, undefined, undefined, true);
+        if (merged) {
+            merged.name = key + "_MergedModel";
+        }
+        return merged;
     }
 
     //
@@ -80,7 +101,7 @@ export class LevelGenerator {
             // explosion
             if (tile.id === "E") {
                 const material = new StandardMaterial("material-explosion", this._scene);
-                material.diffuseColor = Color3.FromHexString("#FFA500");
+                material.diffuseColor = Color3.FromHexString("#bd521c");
                 material.specularColor = Color3.Black();
                 //material.disableLighting = true;
                 this.materials[tile.name] = material;
@@ -131,11 +152,11 @@ export class LevelGenerator {
 
             // explosion
             if (tile.id === "E") {
-                const box = MeshBuilder.CreateBox("box-" + tile.name, { size: tile.width, height: 2 }, this._scene);
+                const box = MeshBuilder.CreateSphere("box-" + tile.name, { diameter: 1 }, this._scene);
                 box.position = new Vector3(0, 0.5, 0);
                 box.material = this.materials[tile.name];
                 box.isVisible = false;
-                box.visibility = 0.5;
+                box.visibility = 0;
                 this.assets[tile.name] = box;
             }
         }
