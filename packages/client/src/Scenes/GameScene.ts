@@ -150,15 +150,15 @@ export class GameScene {
                 size: entity.size,
             });
             setTimeout(() => {
+                this.entities.get(sessionId).delete();
+                this.entities.delete(sessionId);
+            }, 200);
+            setTimeout(() => {
                 exp.delete();
                 exp.dispose();
             }, 1000);
 
             //
-            this.entities.get(sessionId).delete();
-
-            //
-            this.entities.delete(sessionId);
         });
 
         ////////////////////// END COLYSEUS STATE
