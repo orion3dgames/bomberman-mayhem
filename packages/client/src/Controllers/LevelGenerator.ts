@@ -6,7 +6,6 @@ import { Scene } from "@babylonjs/core/scene";
 import { MapHelper } from "../../../shared/MapHelper";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
-import { Tile } from "../../../shared/types";
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 
