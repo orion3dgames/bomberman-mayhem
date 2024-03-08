@@ -17,6 +17,7 @@ import { Cell } from "../Entities/Cell";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Bomb } from "../Entities/Bomb";
 import { Explosion } from "../Entities/Explosion";
+import { SkyMaterial } from "@babylonjs/materials/sky/skyMaterial";
 
 export class GameScene {
     public _game: GameController;
@@ -70,6 +71,12 @@ export class GameScene {
         var ambient = new HemisphericLight("ambient1", new Vector3(0, 1, 0), scene);
         ambient.intensity = 0.5;
 
+        const skyMaterial = new SkyMaterial("skyMaterial", scene);
+        skyMaterial.backFaceCulling = false;
+
+        const skybox = MeshBuilder.CreateBox("skyBox", { size: 1000.0 }, scene);
+        skybox.material = skyMaterial;
+
         // generate level
         let chosenMap = this._game.selectedMap.key;
         this._map = new MapHelper(chosenMap);
@@ -81,9 +88,6 @@ export class GameScene {
 
         // start UI
         this._ui = new PlayerUI(this._scene, this._engine, this);
-
-        //
-        const plane = MeshBuilder.CreatePlane("plane", { width: 2, height: 2 }, scene);
 
         // setup colyseus room
         // hack for devlopement
@@ -118,8 +122,6 @@ export class GameScene {
                 this.entities.set(sessionId, new Entity(sessionId, this._scene, this, entity, currentPlayer));
             }
         });
-
-        // removing player
         this.room.state.players.onRemove((entity, sessionId) => {
             console.log("[GAME] PLAYER LEFT", entity);
             this.entities.get(sessionId).delete();
@@ -142,31 +144,26 @@ export class GameScene {
             this.entities.set(sessionId, new Bomb(sessionId, this._scene, this, entity));
         });
         this.room.state.bombs.onRemove((entity, sessionId) => {
-            // leave an explosion effect
-            let exp = new Explosion("explosion", this._scene, this._map, this._generator, this.room, this._camera, {
-                type: "explosion",
-                col: entity.col,
-                row: entity.row,
-                size: entity.size,
-            });
             setTimeout(() => {
                 this.entities.get(sessionId).delete();
                 this.entities.delete(sessionId);
             }, 200);
-            setTimeout(() => {
-                exp.delete();
-                exp.dispose();
-            }, 1000);
-
-            //
         });
 
         ////////////////////// END COLYSEUS STATE
         /////////////////////////////////////////////////////////////////////////////
 
+        this.room.onMessage(ServerMsg.DO_EXPLOSION, (message) => {
+            console.log(ServerMsg[ServerMsg.DO_EXPLOSION], message);
+            let exp = new Explosion("explosion", this._scene, this._map, this._generator, this.room, this._camera, message);
+            setTimeout(() => {
+                exp.delete();
+            }, 1000);
+        });
+
         // start game event
         this.room.onMessage(ServerMsg.START_GAME, (message) => {
-            console.log("message received from server", message);
+            console.log(ServerMsg[ServerMsg.START_GAME], message);
         });
 
         // game loop

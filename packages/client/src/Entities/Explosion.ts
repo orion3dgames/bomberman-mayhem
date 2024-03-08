@@ -22,6 +22,7 @@ export class Explosion extends TransformNode {
     public tile;
     public col: number = 0;
     public row: number = 0;
+    public cells: [] = [];
 
     public texture;
     public animWheel;
@@ -42,39 +43,6 @@ export class Explosion extends TransformNode {
         // set tile
         this.tile = this._map.findTile(this.type, "name");
 
-        //
-        this.texture = this._scene.getTextureByName("textures/particle_01.png");
-        if (!this.texture) {
-            this.texture = new Texture("textures/particle_01.png", this._scene);
-        }
-
-        // set aniamtion
-        const animWheel = new Animation("wheelAnimation", "scaling", 30, Animation.ANIMATIONTYPE_VECTOR3, Animation.ANIMATIONLOOPMODE_CYCLE);
-
-        const wheelKeys = [];
-
-        //At the animation key 0, the value of rotation.y is 0
-        wheelKeys.push({
-            frame: 0,
-            value: new Vector3(0.1, 0.1, 0.1),
-        });
-
-        //At the animation key 30, (after 1 sec since animation fps = 30) the value of rotation.y is 2PI for a complete rotation
-        wheelKeys.push({
-            frame: 30,
-            value: new Vector3(1.2, 1.2, 1.2),
-        });
-
-        //At the animation key 60
-        wheelKeys.push({
-            frame: 60,
-            value: new Vector3(0, 0, 0),
-        });
-
-        //set the keys
-        animWheel.setKeys(wheelKeys);
-        this.animWheel = animWheel;
-
         // set position
         this.setPosition();
 
@@ -83,6 +51,42 @@ export class Explosion extends TransformNode {
     }
 
     public spawn() {
+        // add camera shake
+        this._camera.shake();
+
+        // for every direction
+        for (let x in this.cells) {
+            let dir = this.cells[x] as any;
+            let row = dir.row;
+            let col = dir.col;
+
+            // show explosion
+            let newRow = row - this.row;
+            let newCol = col - this.col;
+
+            console.log("--> add explosion", newRow, newCol);
+
+            let instance = this._generator.assets["explosion"].createInstance("exp-" + row + "-" + col);
+            instance.position = new Vector3(newCol, 0, newRow);
+            instance.parent = this;
+            instance.isVisible = true;
+
+            // add particule system
+            //////////////////////////////////////////////
+            // create a particle system
+            var particleSystem = this._generator.assets["particleSystem"].clone();
+            particleSystem.emitter = instance; // the starting location
+            particleSystem.start();
+            //////////////////////////////////////////////
+
+            setTimeout(() => {
+                particleSystem.dispose(true);
+                instance.dispose();
+            }, 1000);
+        }
+    }
+
+    public _spawn() {
         const dirs = [
             {
                 // up

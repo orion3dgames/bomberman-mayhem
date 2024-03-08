@@ -1,7 +1,7 @@
 import { Schema, type } from "@colyseus/schema";
 import { GameRoom } from "../GameRoom";
 import { Entity } from "./Entity";
-import { CellType } from "../../../../shared/types";
+import { CellType, ServerMsg } from "../../../../shared/types";
 import { Player } from "./Player";
 import { Cell } from "./Cell";
 
@@ -63,11 +63,14 @@ export class Bomb extends Entity {
         ];
 
         // for every direction
+        let positions = new Map();
         dirs.forEach((dir) => {
             // for distance
             for (let i = 0; i <= this.size; i++) {
                 const col = this.col + dir.col * i;
                 const row = this.row + dir.row * i;
+
+                let key = row + "-" + col;
 
                 // get cell
                 const cell = this.room.state.cells.get(row + "-" + col);
@@ -94,9 +97,13 @@ export class Bomb extends Entity {
                     );
                     this.room.state.cells.set(newCell.sessionId, newCell);
 
+                    positions.set(key, { row: row, col: col });
+
                     // stop the explosion if hit anything
                     return;
                 }
+
+                positions.set(key, { row: row, col: col });
 
                 // bomb hit another bomb so blow that one up too
                 if (cell.bombId) {
@@ -106,15 +113,24 @@ export class Bomb extends Entity {
             }
         });
 
-        this.delete();
+        this.delete(positions);
     }
 
-    public delete() {
+    public delete(positions) {
         // increase player available bombs
         const playerState: Player = this.room.state.players.get(this.owner) as Player;
         playerState.bombs++;
 
         // remove bomb
         this.room.state.bombs.delete(this.sessionId);
+
+        // trigger explosion
+        console.log("TIGGER EXPLOSION", positions);
+        this.room.broadcast(ServerMsg.DO_EXPLOSION, {
+            row: this.row,
+            col: this.col,
+            size: this.size,
+            cells: positions,
+        });
     }
 }

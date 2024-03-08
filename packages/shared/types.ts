@@ -67,6 +67,7 @@ export enum ServerMsg {
     START_GAME_REQUESTED,
     PLAYER_MOVE,
     PLACE_BOMB,
+    DO_EXPLOSION,
 }
 
 export type PlayerInputs = {

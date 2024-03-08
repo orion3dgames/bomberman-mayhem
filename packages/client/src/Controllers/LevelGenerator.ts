@@ -1,5 +1,5 @@
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
-import { Color3 } from "@babylonjs/core/Maths/math.color";
+import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Scene } from "@babylonjs/core/scene";
@@ -8,6 +8,7 @@ import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
+import { ParticleSystem } from "@babylonjs/core/Particles/particleSystem";
 
 export class LevelGenerator {
     private _scene: Scene;
@@ -21,6 +22,7 @@ export class LevelGenerator {
 
     public instances = [];
     public bombModel;
+    public explosionTexture;
 
     constructor(scene: Scene, map: MapHelper, shadow: ShadowGenerator) {
         //
@@ -159,6 +161,40 @@ export class LevelGenerator {
                 this.assets[tile.name] = box;
             }
         }
+
+        // particule
+        // add particule system
+        //////////////////////////////////////////////
+        // create a particle system
+
+        //
+        this.explosionTexture = this._scene.getTextureByName("textures/particle_01.png");
+        if (!this.explosionTexture) {
+            this.explosionTexture = new Texture("textures/particle_01.png", this._scene);
+        }
+
+        var particleSystem = new ParticleSystem("particles", 1000, this._scene);
+        particleSystem.particleTexture = this.explosionTexture;
+        particleSystem.emitter = this.assets["explosion"]; // the starting location
+        // Colors of all particles
+        particleSystem.color1 = Color4.FromHexString("#f58d42");
+        particleSystem.color2 = Color4.FromHexString("#ff1900");
+        particleSystem.colorDead = new Color4(0, 0, 0, 1);
+        // Size of each particle (random between...
+        particleSystem.minSize = 0.3;
+        particleSystem.maxSize = 0.6;
+        // Life time of each particle (random between...
+        particleSystem.minLifeTime = 1;
+        particleSystem.maxLifeTime = 1.5;
+        particleSystem.targetStopDuration = 1.5;
+        // Emission rate
+        particleSystem.emitRate = 1000;
+        particleSystem.createSphereEmitter(1);
+        particleSystem.updateSpeed = 0.1;
+
+        this.assets["particleSystem"] = particleSystem;
+
+        console.log(this.assets);
     }
 
     public async generateMeshes(map: string) {
