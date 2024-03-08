@@ -1,8 +1,3 @@
-if (process.env.NODE_ENV !== "production") {
-    import("@babylonjs/core/Debug/debugLayer");
-    import("@babylonjs/inspector");
-}
-
 // ES6 IMPORTS
 // if there are cases where es6 dependencies could be causing issues just try and load the whole babylon core, and
 // that fixes it, then it is a dependencies issue, check this link out for answers.
@@ -16,6 +11,7 @@ import "@babylonjs/core/Animations/animatable";
 import "@babylonjs/loaders/glTF/2.0/glTFLoader";
 import "@babylonjs/loaders/glTF/2.0/Extensions/KHR_materials_pbrSpecularGlossiness";
 import "@babylonjs/loaders/glTF/2.0/Extensions/KHR_draco_mesh_compression";
+import "@babylonjs/core/Audio/audioSceneComponent";
 /*
 import "@babylonjs/core/Culling/ray";
 import "@babylonjs/core/Rendering/depthRendererSceneComponent";
@@ -59,11 +55,23 @@ class App {
             antialias: true,
         });
 
+        if (Engine.audioEngine) {
+            Engine.audioEngine.useCustomUnlockedButton = true;
+        }
+
+        window.addEventListener(
+            "click",
+            () => {
+                Engine.audioEngine.unlock();
+            },
+            { once: true }
+        );
+
         // preload game data
         this.game = new GameController(this);
 
         // set default scene
-        this.game.setScene(SceneName.GAME);
+        this.game.setScene(SceneName.HOME);
 
         // main render loop & state machine
         await this._render();

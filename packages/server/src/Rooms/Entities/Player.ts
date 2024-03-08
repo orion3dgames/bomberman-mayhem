@@ -32,7 +32,7 @@ export class Player extends Entity {
         // set default
         this.health = 1; // default health
         this.bombs = 100; // 1 bomb by default
-        this.explosion_size = 2; //
+        this.explosion_size = 8; //
     }
 
     move(playerInput) {

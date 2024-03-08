@@ -1,6 +1,9 @@
 @font-face {
-    font-family: gameFont;
-    src: url(./fonts/BreatheFireIii-PKLOB.ttf);
+    font-family: 'luckiest_guy';
+    src: url('./fonts/luckiestguy-regular-webfont.woff2') format('woff2'),
+        url('./fonts/luckiestguy-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 }
 
 html,
@@ -13,7 +16,7 @@ body{
 }
 
 html{
-    font-family: "Arial", serif;
+    font-family: "luckiest_guy", "arial", serif;
     font-size: 16px;
     background-color: #222;
 }

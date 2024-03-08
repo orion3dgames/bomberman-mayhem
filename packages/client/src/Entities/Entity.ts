@@ -38,6 +38,8 @@ export class Entity extends TransformNode {
     public name: string = "";
     public col: number = 0;
     public row: number = 0;
+    public bombs: number = 0;
+    public health: number = 0;
 
     constructor(name: string, scene: Scene, gameScene: GameScene, entity, isCurrentPlayer = false) {
         super(name, scene);
@@ -96,19 +98,19 @@ export class Entity extends TransformNode {
 
     public spawn() {
         // square
-        let boxSize = 0.7;
-        const box = MeshBuilder.CreateBox("box", { size: 0.7 }, this._scene);
+        let boxSize = 0.6;
+        const box = MeshBuilder.CreateBox("box", { size: boxSize }, this._scene);
         box.position = new Vector3(0, boxSize / 2, 0);
         const material = new StandardMaterial("box-material", this._scene);
-        material.diffuseColor = Color3.Red();
+        material.diffuseColor = Color3.Black();
         box.material = material;
         box.parent = this;
         this.playerMesh = box;
 
         // circle
-        const sphere = MeshBuilder.CreateSphere("spere", { diameter: 0.7, segments: 4 }, this._scene);
+        const sphere = MeshBuilder.CreateSphere("spere", { diameter: boxSize, segments: 2 }, this._scene);
         const sphere_material = new StandardMaterial("sphere-material", this._scene);
-        sphere_material.diffuseColor = Color3.Red();
+        sphere_material.diffuseColor = Color3.Black();
         sphere.material = material;
         sphere.parent = box;
         sphere.position = new Vector3(0, 0, -0.2);

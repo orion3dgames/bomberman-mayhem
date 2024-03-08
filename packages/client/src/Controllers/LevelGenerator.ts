@@ -9,6 +9,7 @@ import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator"
 import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { ParticleSystem } from "@babylonjs/core/Particles/particleSystem";
+import { Sound } from "@babylonjs/core/Audio/sound";
 
 export class LevelGenerator {
     private _scene: Scene;
@@ -144,7 +145,7 @@ export class LevelGenerator {
 
             // bomb
             if (tile.id === "T") {
-                const box = MeshBuilder.CreateSphere("box-" + tile.name, { diameter: 0.8 }, this._scene);
+                const box = MeshBuilder.CreateSphere("box-" + tile.name, { diameter: 0.6 }, this._scene);
                 box.position = new Vector3(0, 0.4, 0);
                 box.material = this.materials[tile.name];
                 box.isVisible = false;
@@ -194,7 +195,21 @@ export class LevelGenerator {
 
         this.assets["particleSystem"] = particleSystem;
 
-        console.log(this.assets);
+        // LOAD SOUNDS
+        let explosionSound = new Sound(
+            "explosionSound",
+            "./sounds/explosion.mp3",
+            this._scene,
+            () => {
+                this.assets["explosionSound"] = explosionSound;
+                console.log("SOUND LOADED", this.assets);
+            },
+            {
+                loop: false,
+                autoplay: false,
+                volume: 0.5,
+            }
+        );
     }
 
     public async generateMeshes(map: string) {

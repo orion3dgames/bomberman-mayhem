@@ -11,6 +11,7 @@ import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { MapHelper } from "../../../shared/MapHelper";
 import { LevelGenerator } from "../Controllers/LevelGenerator";
 import { Explosion } from "./Explosion";
+import { BounceEase, CircleEase, CubicEase, EasingFunction } from "@babylonjs/core/Animations/easing";
 
 export class Bomb extends TransformNode {
     public _camera: PlayerCamera;
@@ -86,6 +87,11 @@ export class Bomb extends TransformNode {
         // add shadow
         this._shadow.addShadowCaster(instance);
 
+        // Creating an easing function
+        const easingFunction = new CubicEase();
+        // For each easing function, you can choose between EASEIN (default), EASEOUT, EASEINOUT
+        easingFunction.setEasingMode(EasingFunction.EASINGMODE_EASEINOUT);
+
         //Animate the bomb
         const animWheel = new Animation("wheelAnimation", "scaling", 30, Animation.ANIMATIONTYPE_VECTOR3, Animation.ANIMATIONLOOPMODE_CYCLE);
 
@@ -111,6 +117,7 @@ export class Bomb extends TransformNode {
 
         //set the keys
         animWheel.setKeys(wheelKeys);
+        animWheel.setEasingFunction(easingFunction);
 
         //Link this animation to a bomb
         instance.animations = [];

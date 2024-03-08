@@ -6,12 +6,14 @@ import { CellType } from "../../../shared/types";
 import { ParticleSystem } from "@babylonjs/core/Particles/particleSystem";
 import { Color4 } from "@babylonjs/core/Maths/math.color";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
+import { Sound } from "@babylonjs/core/Audio/sound";
 
 export class Explosion extends TransformNode {
     public _generator;
     public _map;
     public _room;
     public _camera;
+    public _entities;
 
     public playerMesh;
     public mesh1;
@@ -27,11 +29,11 @@ export class Explosion extends TransformNode {
     public texture;
     public animWheel;
 
-    constructor(name: string, scene: Scene, map, generator, room, camera, data) {
+    constructor(name: string, scene: Scene, map, generator, entities, camera, data) {
         super(name, scene);
 
         // set variables
-        this._room = room;
+        this._entities = entities;
         this._scene = scene;
         this._map = map;
         this._generator = generator;
@@ -64,21 +66,31 @@ export class Explosion extends TransformNode {
             let newRow = row - this.row;
             let newCol = col - this.col;
 
-            console.log("--> add explosion", newRow, newCol);
-
+            // create explosion emitter
             let instance = this._generator.assets["explosion"].createInstance("exp-" + row + "-" + col);
             instance.position = new Vector3(newCol, 0, newRow);
             instance.parent = this;
             instance.isVisible = true;
 
             // add particule system
-            //////////////////////////////////////////////
-            // create a particle system
             var particleSystem = this._generator.assets["particleSystem"].clone();
             particleSystem.emitter = instance; // the starting location
             particleSystem.start();
-            //////////////////////////////////////////////
 
+            // add decal
+            let cell = this._entities.get(newRow + "-" + newCol);
+            if (cell && cell.type === "ground") {
+                cell.playerMesh.visibility = 0.5;
+                setTimeout(() => {
+                    cell.playerMesh.visibility = 1;
+                }, 1000);
+            }
+            console.log(cell);
+
+            // play epxlosion sound
+            this._generator.assets["explosionSound"].play();
+
+            // remove
             setTimeout(() => {
                 particleSystem.dispose(true);
                 instance.dispose();
@@ -86,6 +98,7 @@ export class Explosion extends TransformNode {
         }
     }
 
+    // obsolete???
     public _spawn() {
         const dirs = [
             {

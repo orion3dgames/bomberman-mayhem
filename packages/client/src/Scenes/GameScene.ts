@@ -155,7 +155,7 @@ export class GameScene {
 
         this.room.onMessage(ServerMsg.DO_EXPLOSION, (message) => {
             console.log(ServerMsg[ServerMsg.DO_EXPLOSION], message);
-            let exp = new Explosion("explosion", this._scene, this._map, this._generator, this.room, this._camera, message);
+            let exp = new Explosion("explosion", this._scene, this._map, this._generator, this.entities, this._camera, message);
             setTimeout(() => {
                 exp.delete();
             }, 1000);

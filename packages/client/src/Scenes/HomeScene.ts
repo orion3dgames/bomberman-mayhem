@@ -65,31 +65,34 @@ export class HomeScene {
     }
 
     async events() {
+        // join loby
         this._game.client.joinLobby().then((lobbyJoined) => {
-            console.log(lobbyJoined.sessionId, "joined", lobbyJoined.name);
-
             this.lobbyJoined = lobbyJoined;
 
+            // all rooms
             this.lobbyJoined.onMessage("rooms", (rooms: []) => {
-                console.log("ALL ROOMS", rooms);
                 this.allRooms = rooms;
                 this.loadRooms();
             });
 
+            // any updates
             this.lobbyJoined.onMessage("+", ([roomId, room]) => {
                 const roomIndex = this.allRooms.findIndex((room) => room.roomId === roomId);
                 if (roomIndex !== -1) {
                     this.allRooms[roomIndex] = room;
-                    console.log("UPDATE ROOM", room.roomId, room.status);
                 } else {
                     this.allRooms.push(room);
-                    console.log("NEW ROOM", room.roomId);
                 }
+
+                // remove any locked rooms
+                if (room.locked) {
+                    this.allRooms = this.allRooms.filter((room) => room.roomId !== roomId);
+                }
+
                 this.loadRooms();
             });
 
             this.lobbyJoined.onMessage("-", (roomId) => {
-                console.log("REMOVE ROOMS", roomId);
                 this.allRooms = this.allRooms.filter((room) => room.roomId !== roomId);
                 this.loadRooms();
             });
@@ -97,33 +100,84 @@ export class HomeScene {
     }
 
     loadRooms() {
-        console.log("[LOBBY] REFRESH UI", this.lobbyStackPanel.children.length);
-
         // if already exists
         this.lobbyStackPanel.getDescendants().forEach((el) => {
             el.dispose();
         });
 
         if (this.allRooms.length > 0) {
-            this.allRooms.forEach((room) => {
-                const blocGame = Button.CreateSimpleButton(
-                    "blocGame" + room.roomId,
-                    room.roomId + ": " + room.clients + "/" + room.maxClients + " | " + room.metadata.map
-                );
-                blocGame.width = 1;
-                blocGame.height = "60px";
-                blocGame.color = "white";
-                blocGame.thickness = 1;
-                blocGame.color = "#000";
-                blocGame.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-                blocGame.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
-                this.lobbyStackPanel.addControl(blocGame);
+            const tableHeader = new Rectangle("tableHeader");
+            tableHeader.width = 1;
+            tableHeader.height = "20px";
+            tableHeader.thickness = 0;
+            tableHeader.background = "transparent";
+            tableHeader.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+            this.lobbyStackPanel.addControl(tableHeader);
 
-                blocGame.onPointerUpObservable.add(async () => {
+            const col1Text = new TextBlock("col1Text", "#");
+            col1Text.width = "33%";
+            col1Text.left = "5%";
+            col1Text.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+            col1Text.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+            tableHeader.addControl(col1Text);
+
+            const col2Text = new TextBlock("col2Text", "MAP");
+            col2Text.width = "33%";
+            col2Text.left = "33%";
+            col2Text.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+            col2Text.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+            tableHeader.addControl(col2Text);
+
+            const col3Text = new TextBlock("col3Text", "PLAYERS");
+            col3Text.width = "33%";
+            col3Text.left = "66%";
+            col3Text.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+            col3Text.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+            tableHeader.addControl(col3Text);
+
+            // add room
+            this.allRooms.forEach((room: any) => {
+                const tableHeader = new Rectangle("tableHeader");
+                tableHeader.width = 1;
+                tableHeader.height = "50px";
+                tableHeader.background = "#f6f8fc";
+                tableHeader.fontSizeInPixels = 20;
+                tableHeader.thickness = 1;
+                tableHeader.color = "#222";
+                tableHeader.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+                this.lobbyStackPanel.addControl(tableHeader);
+
+                const col1Text = new TextBlock("col1Text", room.roomId);
+                col1Text.width = "33%";
+                col1Text.left = "5%";
+                col1Text.color = "black";
+                col1Text.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+                col1Text.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+                tableHeader.addControl(col1Text);
+
+                const col2Text = new TextBlock("col2Text", room.metadata.map);
+                col2Text.width = "33%";
+                col2Text.left = "33%";
+                col2Text.color = "black";
+                col2Text.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+                col2Text.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+                tableHeader.addControl(col2Text);
+
+                const col3Text = new TextBlock("col3Text", room.clients + "/" + room.maxClients);
+                col3Text.width = "33%";
+                col3Text.left = "66%";
+                col3Text.color = "black";
+                col3Text.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+                col3Text.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+                tableHeader.addControl(col3Text);
+
+                tableHeader.onPointerUpObservable.add(async () => {
                     this._game.client.join(room.roomId, this._game.user.displayName).then((joinedRoom) => {
-                        this._game.joinedRoom = joinedRoom;
-                        this._game.setScene(SceneName.ROOM);
                         this.lobbyJoined.leave();
+                        setTimeout(() => {
+                            this._game.joinedRoom = joinedRoom;
+                            this._game.setScene(SceneName.ROOM);
+                        }, 200);
                     });
                 });
             });
@@ -140,7 +194,7 @@ export class HomeScene {
     }
 
     create(guiMenu) {
-        let padding = 15;
+        let padding = 10;
 
         // full width
         const fullWidth = new Rectangle("fullwidth");
@@ -149,6 +203,7 @@ export class HomeScene {
         fullWidth.thickness = 0;
         fullWidth.background = "#222222";
         fullWidth.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        fullWidth.fontFamily = this._game.config.fontFamily;
         guiMenu.addControl(fullWidth);
 
         // middle columm
@@ -204,7 +259,7 @@ export class HomeScene {
         welcomeText.height = "30px";
         welcomeText.color = "white";
         welcomeText.top = "80px";
-        welcomeText.fontSizeInPixels = 12;
+        welcomeText.fontSizeInPixels = 14;
         welcomeText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         welcomeText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         header.addControl(welcomeText);
@@ -225,16 +280,21 @@ export class HomeScene {
         const usernameInput = new InputText("usernameInput");
         usernameInput.top = "-" + padding + "px";
         usernameInput.width = 1;
-        usernameInput.height = "40px;";
+        usernameInput.height = "50px;";
         usernameInput.color = "#000";
         usernameInput.background = "#FFF";
         usernameInput.text = this._game.user.displayName;
+        usernameInput.fontSizeInPixels = 24;
         usernameInput.focusedBackground = "gray";
         usernameInput.placeholderText = "Enter Username";
         usernameInput.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         usernameInput.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
         usernameInput.setPadding(padding, padding, -padding, padding);
         formBloc.addControl(usernameInput);
+
+        usernameInput.onTextChangedObservable.add(async () => {
+            this._game.user.displayName = usernameInput.text;
+        });
 
         //////////////////////////////////////////////////
         // FORM CONTAINER columm
@@ -257,12 +317,13 @@ export class HomeScene {
         subMainGrid.thickness = 0;
         subGrid.addControl(subMainGrid, 2);
 
+        console.log(this._game.config);
         const createBtn = Button.CreateSimpleButton("createBtn", "CREATE");
         createBtn.width = 1;
-        createBtn.height = "30px";
-        createBtn.color = "white";
-        createBtn.thickness = 1;
-        createBtn.color = "#000";
+        createBtn.heightInPixels = this._game.config.button.height;
+        createBtn.color = this._game.config.button.color;
+        createBtn.background = this._game.config.button.background;
+        createBtn.textBlock.fontSizeInPixels = this._game.config.button.fontSize;
         createBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         createBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
         subHeaderGrid.addControl(createBtn);
@@ -281,7 +342,7 @@ export class HomeScene {
         lobbyScroller.height = 1;
         lobbyScroller.top = "0px";
         lobbyScroller.thickness = 1;
-        lobbyScroller.background = "#EEEEEE";
+        lobbyScroller.background = "#FFF";
         lobbyScroller.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         lobbyScroller.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         subMainGrid.addControl(lobbyScroller);
@@ -292,7 +353,7 @@ export class HomeScene {
         lobbyStackPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         lobbyStackPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         lobbyStackPanel.paddingTop = "5px;";
-        lobbyStackPanel.spacing = 5;
+        lobbyStackPanel.spacing = 10;
         lobbyScroller.addControl(lobbyStackPanel);
 
         // load scene

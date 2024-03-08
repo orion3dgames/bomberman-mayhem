@@ -16,6 +16,7 @@ import { Grid } from "@babylonjs/gui/2D/controls/grid";
 import { StackPanel } from "@babylonjs/gui/2D/controls/stackPanel";
 import { Room } from "colyseus.js";
 import { MenuOptions } from "../Utils/MenuOptions";
+import { title } from "process";
 
 export class RoomScene {
     private _game: GameController;
@@ -196,16 +197,21 @@ export class RoomScene {
         for (let makKey in this._game.maps) {
             let map = this._game.maps[makKey];
 
-            let background = this._game.selectedMap && this._game.selectedMap.key == map.key ? "green" : "white";
-
             const mapBtn = Button.CreateSimpleButton("mapBtn" + makKey, map.name);
             mapBtn.width = "100px";
             mapBtn.height = "60px";
             mapBtn.color = "black";
-            mapBtn.background = background;
+            mapBtn.background = "white";
             mapBtn.thickness = 1;
+            mapBtn.fontSizeInPixels = 18;
             mapBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
             mapBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
+
+            if (this._game.selectedMap && this._game.selectedMap.key == map.key) {
+                mapBtn.color = "white";
+                mapBtn.background = this._game.config.primary_color;
+            }
+
             this.mapStackPanel.addControl(mapBtn);
 
             mapBtn.onPointerUpObservable.add(() => {
@@ -217,7 +223,7 @@ export class RoomScene {
     }
 
     create(guiMenu) {
-        let padding = 15;
+        let padding = 10;
 
         // full width
         const fullWidth = new Rectangle("fullwidth");
@@ -226,6 +232,7 @@ export class RoomScene {
         fullWidth.thickness = 0;
         fullWidth.background = "#222222";
         fullWidth.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+        fullWidth.fontFamily = this._game.config.fontFamily;
         guiMenu.addControl(fullWidth);
 
         // middle columm
@@ -238,22 +245,24 @@ export class RoomScene {
         fullWidth.addControl(columnRect);
 
         const subGrid = new Grid();
-        subGrid.addRowDefinition(padding, true);
+
         subGrid.addColumnDefinition(1);
 
-        subGrid.addRowDefinition(30, true); // HEADER CANCEL BUTTON
         subGrid.addRowDefinition(padding, true);
 
-        subGrid.addRowDefinition(30, true); // HEADER TITLE
+        subGrid.addRowDefinition(50, true); // HEADER CANCEL BUTTON
+        subGrid.addRowDefinition(padding, true);
+
+        subGrid.addRowDefinition(50, true); // HEADER TITLE
         subGrid.addRowDefinition(padding, true);
 
         subGrid.addRowDefinition(120, true); // MAPS SECTION
         subGrid.addRowDefinition(padding, true);
 
-        subGrid.addRowDefinition(1); // MAIN CONTENT
+        subGrid.addRowDefinition(1); // MAIN CONTENT TAKES REMAINING AVAILABLE SPACE
         subGrid.addRowDefinition(padding, true);
 
-        subGrid.addRowDefinition(60, true); // CREATE BUTTON
+        subGrid.addRowDefinition(50, true); // CREATE BUTTON
         subGrid.addRowDefinition(padding, true);
 
         columnRect.addControl(subGrid);
@@ -261,10 +270,10 @@ export class RoomScene {
         // 1
         const cancelButton = Button.CreateSimpleButton("cancelButton", "CANCEL");
         cancelButton.width = 1;
-        cancelButton.height = "30px";
+        cancelButton.height = "50px";
         cancelButton.color = "white";
+        cancelButton.fontSizeInPixels = 22;
         cancelButton.thickness = 1;
-        cancelButton.color = "#FFF";
         cancelButton.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         cancelButton.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
         subGrid.addControl(cancelButton, 1);
@@ -285,6 +294,8 @@ export class RoomScene {
         const titleGame = new TextBlock("titleGame" + this.room.roomId);
         titleGame.width = 1;
         titleGame.text = "ROOM #" + this.room.roomId;
+        titleGame.fontSizeInPixels = 26;
+        titleGame.color = this._game.config.primary_color;
         titleGame.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         subHeaderGrid.addControl(titleGame);
 
@@ -354,9 +365,11 @@ export class RoomScene {
         // 9
         const createBtn = Button.CreateSimpleButton("back", "START");
         createBtn.width = 1;
-        createBtn.height = "60px";
-        createBtn.color = "white";
-        createBtn.thickness = 1;
+        createBtn.thickness = 0;
+        createBtn.heightInPixels = this._game.config.button.height;
+        createBtn.color = this._game.config.button.color;
+        createBtn.background = this._game.config.button.background;
+        createBtn.textBlock.fontSizeInPixels = this._game.config.button.fontSize;
         createBtn.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
         createBtn.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER;
         subGrid.addControl(createBtn, 9);
