@@ -164,11 +164,6 @@ export class LevelGenerator {
         }
 
         // particule
-        // add particule system
-        //////////////////////////////////////////////
-        // create a particle system
-
-        //
         this.explosionTexture = this._scene.getTextureByName("textures/particle_01.png");
         if (!this.explosionTexture) {
             this.explosionTexture = new Texture("textures/particle_01.png", this._scene);
@@ -182,17 +177,16 @@ export class LevelGenerator {
         particleSystem.color2 = Color4.FromHexString("#ff1900");
         particleSystem.colorDead = new Color4(0, 0, 0, 1);
         // Size of each particle (random between...
-        particleSystem.minSize = 0.3;
-        particleSystem.maxSize = 0.6;
+        particleSystem.minSize = 0.2;
+        particleSystem.maxSize = 0.4;
         // Life time of each particle (random between...
-        particleSystem.minLifeTime = 1;
+        particleSystem.minLifeTime = 0.2;
         particleSystem.maxLifeTime = 1.5;
         particleSystem.targetStopDuration = 1.5;
         // Emission rate
         particleSystem.emitRate = 1000;
-        particleSystem.createSphereEmitter(1);
-        particleSystem.updateSpeed = 0.1;
-
+        particleSystem.createSphereEmitter(0.1);
+        particleSystem.updateSpeed = 0.09;
         this.assets["particleSystem"] = particleSystem;
 
         // LOAD SOUNDS
@@ -207,7 +201,7 @@ export class LevelGenerator {
             {
                 loop: false,
                 autoplay: false,
-                volume: 0.5,
+                volume: 0.1,
             }
         );
     }

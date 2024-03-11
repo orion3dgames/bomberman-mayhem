@@ -36,6 +36,9 @@ export class Player extends Entity {
     }
 
     move(playerInput) {
+        //
+        let previousCell = this.room.state.cells.get(this.row + "-" + this.col);
+
         // calculate new position
         let speed = 1;
         let newCol = this.col - playerInput.h * speed;
@@ -50,6 +53,9 @@ export class Player extends Entity {
             this.sequence = playerInput.seq;
 
             //
+            let cell = this.room.state.cells.get(this.row + "-" + this.col);
+            cell.playerId = this.sessionId;
+            previousCell.playerId = "";
         }
     }
 

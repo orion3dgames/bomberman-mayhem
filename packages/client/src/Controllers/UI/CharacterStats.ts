@@ -64,6 +64,7 @@ export class CharacterStats {
         let locationText = "";
         locationText += "Health: " + this._entity.health + " \n";
         locationText += "Bombs: " + this._entity.bombs + " \n";
+        locationText += "FPS: " + this._engine.getFps() + " \n";
         this._debugTextUI.text = locationText;
     }
 }

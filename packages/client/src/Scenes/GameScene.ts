@@ -124,7 +124,9 @@ export class GameScene {
         });
         this.room.state.players.onRemove((entity, sessionId) => {
             console.log("[GAME] PLAYER LEFT", entity);
-            this.entities.get(sessionId).delete();
+            if (this.entities.get(sessionId)) {
+                this.entities.get(sessionId).delete();
+            }
             this.entities.delete(sessionId);
         });
 
@@ -134,7 +136,9 @@ export class GameScene {
             this.entities.set(sessionId, new Cell(sessionId, this._scene, this, entity));
         });
         this.room.state.cells.onRemove((entity, sessionId) => {
-            this.entities.get(sessionId).delete();
+            if (this.entities.get(sessionId)) {
+                this.entities.get(sessionId).delete();
+            }
             this.entities.delete(sessionId);
         });
 
@@ -145,7 +149,9 @@ export class GameScene {
         });
         this.room.state.bombs.onRemove((entity, sessionId) => {
             setTimeout(() => {
-                this.entities.get(sessionId).delete();
+                if (this.entities.get(sessionId)) {
+                    this.entities.get(sessionId).delete();
+                }
                 this.entities.delete(sessionId);
             }, 200);
         });

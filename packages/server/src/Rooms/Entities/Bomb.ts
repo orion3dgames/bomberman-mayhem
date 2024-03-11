@@ -10,7 +10,7 @@ export class Bomb extends Entity {
 
     public owner;
     public timeoutTimer;
-    public timeout: number = 3000;
+    public timeout: number = 1000;
 
     constructor(args, room: GameRoom) {
         super(args, room);
@@ -64,6 +64,8 @@ export class Bomb extends Entity {
 
         // for every direction
         let positions = new Map();
+        let players = new Map();
+
         dirs.forEach((dir) => {
             // for distance
             for (let i = 0; i <= this.size; i++) {
@@ -103,13 +105,28 @@ export class Bomb extends Entity {
                     return;
                 }
 
+                // check if player is hit
+                if (cell.playerId !== "") {
+                    players.set(cell.playerId, cell.playerId);
+                }
+
+                // else explosion can continue
                 positions.set(key, { row: row, col: col });
 
                 // bomb hit another bomb so blow that one up too
                 if (cell.bombId) {
                     let bomb = this.room.state.bombs.get(cell.bombId);
-                    setTimeout(() => bomb.trigger(), 200); // slight delay
+                    setTimeout(() => bomb.trigger(), 400); // slight delay
                 }
+            }
+        });
+
+        // decrease life of players in explosion
+        // nota: make sure to only decrease 1 life at the time?
+        players.forEach((sessionId) => {
+            const player = this.room.state.players.get(sessionId);
+            if (player) {
+                player.health--;
             }
         });
 

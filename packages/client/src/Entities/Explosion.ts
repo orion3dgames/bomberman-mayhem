@@ -80,19 +80,20 @@ export class Explosion extends TransformNode {
             // add decal
             let cell = this._entities.get(newRow + "-" + newCol);
             if (cell && cell.type === "ground") {
-                cell.playerMesh.visibility = 0.5;
+                cell.visibility = 0.5;
                 setTimeout(() => {
-                    cell.playerMesh.visibility = 1;
+                    cell.visibility = 1;
                 }, 1000);
             }
-            console.log(cell);
 
             // play epxlosion sound
-            this._generator.assets["explosionSound"].play();
+            //this._generator.assets["explosionSound"].setPosition(new Vector3(newRow, 0, newCol));
+            //this._generator.assets["explosionSound"].setVolume(0.1);
+            //this._generator.assets["explosionSound"].play();
 
             // remove
             setTimeout(() => {
-                particleSystem.dispose(true);
+                //particleSystem.dispose(true);
                 instance.dispose();
             }, 1000);
         }
