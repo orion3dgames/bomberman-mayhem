@@ -132,15 +132,20 @@ export class MapHelper {
                 let sessionId = "" + rowId + "-" + colId;
                 let type = CellType.GROUND;
 
+                /*
                 // if ground
-                if (tileID === " " && Math.random() < 0.4) {
+                let rand = Math.random();
+                if (tileID === " " && rand < 0.4) {
                     type = CellType.BREAKABLE_WALL;
+                } else if (tileID === " " && rand < 0.5) {
+                    type = CellType.WALL;
                 }
 
                 // if wall
                 if (tileID === "W") {
                     type = CellType.WALL;
                 }
+                */
 
                 let wall = new Cell(
                     {

@@ -10,6 +10,9 @@ class Config {
     updateRate = 100; // Set frequency the patched state should be sent to all clients, in milliseconds
     databaseUpdateRate = 10000; // the frequency at which server save players position
 
+    // players
+    speed = 1;
+
     // theme
     fontFamily = "luckiest_guy";
     primary_color = "purple";

@@ -18,6 +18,7 @@ import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Bomb } from "../Entities/Bomb";
 import { Explosion } from "../Entities/Explosion";
 import { SkyMaterial } from "@babylonjs/materials/sky/skyMaterial";
+import { AxesViewer } from "@babylonjs/core/Debug/axesViewer";
 
 export class GameScene {
     public _game: GameController;

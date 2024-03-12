@@ -54,9 +54,10 @@ export class Player extends Entity {
             this.sequence = playerInput.seq;
 
             //
+            /*
             let cell = this.room.state.cells.get(this.row + "-" + this.col);
             cell.playerId = this.sessionId;
-            previousCell.playerId = "";
+            previousCell.playerId = "";*/
         }
     }
 

@@ -53,6 +53,6 @@ export class PlayerCamera {
 
     tween(player) {
         //this._cameraRoot.position = player.position;
-        this._cameraRoot.position = Vector3.Lerp(this._cameraRoot.position, new Vector3(player.position.x, player.position.y, player.position.z), 0.4);
+        this._cameraRoot.position = Vector3.Lerp(this._cameraRoot.position, new Vector3(player.position.x, player.position.y, player.position.z), 0.2);
     }
 }

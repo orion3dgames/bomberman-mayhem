@@ -14,8 +14,10 @@ Building a basic multiplayer bomberman type game using babylon.js and colyseus
 - Last player alive will be declared the winner
 
 ## Power Ups Available
-- Heart (will give player 1 extra health) 
-- Bomb (will give player 1 extra bomb)
+There is a 40% chance a powerup appears every time a player destroys a breakable wall.
+- Heart (will give player 1 extra health till a max of 3) 
+- Bomb (will give player 1 extra bomb till a max of 3)
+- Speed (will give player 1 extra speed till a max of 3)
 
 ## Current Progress
 - WIP

@@ -77,6 +77,11 @@ export class Bomb extends Entity {
                 // get cell
                 const cell = this.room.state.cells.get(row + "-" + col);
 
+                // cell must exists
+                if (!cell) {
+                    return false;
+                }
+
                 // stop the explosion if it hit a wall
                 if (cell.type === CellType.WALL) {
                     return;

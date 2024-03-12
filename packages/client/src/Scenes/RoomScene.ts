@@ -146,6 +146,18 @@ export class RoomScene {
             blocGame.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
             this.playerStackPanel.addControl(blocGame);
 
+            // color
+            const colorBLoc = new Rectangle("colorBLoc" + player.sessionId);
+            colorBLoc.top = "10px";
+            colorBLoc.left = "10px";
+            colorBLoc.width = "30px";
+            colorBLoc.height = "30px;";
+            colorBLoc.background = player.color;
+            colorBLoc.thickness = 1;
+            colorBLoc.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+            colorBLoc.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+            blocGame.addControl(colorBLoc);
+
             // middle columm
             const textGame = new TextBlock("textGame" + player.sessionId);
             textGame.width = 1;

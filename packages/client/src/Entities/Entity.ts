@@ -3,8 +3,7 @@ import { Color3 } from "@babylonjs/core/Maths/math.color";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Scene } from "@babylonjs/core/scene";
-import { LevelGenerator } from "../Controllers/LevelGenerator";
-import { PlayerInput } from "../Controllers/PlayerInput";
+import { PlayerInput } from "./Entity/PlayerInput";
 import { PlayerCamera } from "../Controllers/PlayerCamera";
 import { PlayerUI } from "../Controllers/PlayerUI";
 import { Engine } from "@babylonjs/core/Engines/engine";
@@ -13,8 +12,8 @@ import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { MoveController } from "./Entity/MoveController";
 import { MapHelper } from "../../../shared/MapHelper";
-import tiles from "../../../shared/Data/tiles.json";
 import { ServerMsg } from "../../../shared/types";
+import { AxesViewer } from "@babylonjs/core/Debug/axesViewer";
 
 export class Entity extends TransformNode {
     public _camera: PlayerCamera;
@@ -63,18 +62,18 @@ export class Entity extends TransformNode {
         // set tile
         this.tile = this._map.findTile(this.type, "name");
 
+        // spawn player
+        this.spawn();
+
+        // move controller
+        this.moveController = new MoveController(this);
+
         // if current player
         if (isCurrentPlayer) {
             // set inputs
             this._input = new PlayerInput(this);
             this._camera = gameScene._camera;
         }
-
-        // spawn player
-        this.spawn();
-
-        // move controller
-        this.moveController = new MoveController(this);
 
         // set default position
         this.moveController.setPositionAndRotation(entity); // set next default position from server entity
@@ -89,7 +88,7 @@ export class Entity extends TransformNode {
 
             // do server reconciliation on client if current player only & not blocked
             if (this.isCurrentPlayer) {
-                this.moveController.reconcileMove(this._entity.sequence); // set default entity position
+                //this.moveController.reconcileMove(this._entity.sequence); // set default entity position
             }
         });
 
@@ -109,15 +108,6 @@ export class Entity extends TransformNode {
         box.parent = this;
         this.playerMesh = box;
 
-        // circle
-        const sphere = MeshBuilder.CreateSphere("spere", { diameter: boxSize, segments: 2 }, this._scene);
-        const sphere_material = new StandardMaterial("sphere-material", this._scene);
-        sphere_material.diffuseColor = Color3.Black();
-        sphere_material.specularColor = Color3.Black();
-        sphere.material = material;
-        sphere.parent = box;
-        sphere.position = new Vector3(0, 0, -0.2);
-
         // add player shadow
         this._shadow.addShadowCaster(box);
     }
@@ -125,7 +115,7 @@ export class Entity extends TransformNode {
     public update(delta: number) {
         // tween entity
         if (this && this.moveController) {
-            this.moveController.tween();
+            //this.moveController.tween();
         }
 
         // only for current player
@@ -138,12 +128,11 @@ export class Entity extends TransformNode {
         // process player movement
         if (this.isCurrentPlayer) {
             //
-            this.moveController.processMove();
+            //this.moveController.processMove();
 
             // if
             if (this._input.space_pressed === true) {
                 this._room.send(ServerMsg.PLACE_BOMB);
-
                 this._input.space_pressed = false;
             }
         }
@@ -159,7 +148,11 @@ export class Entity extends TransformNode {
     }
 
     public delete() {
-        this.playerMesh.dispose();
-        this.characterLabel.dispose();
+        if (this.playerMesh) {
+            this.playerMesh.dispose();
+        }
+        if (this.characterLabel) {
+            this.characterLabel.dispose();
+        }
     }
 }

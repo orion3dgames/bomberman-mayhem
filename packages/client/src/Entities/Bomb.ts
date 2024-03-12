@@ -1,6 +1,6 @@
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { Scene } from "@babylonjs/core/scene";
-import { PlayerInput } from "../Controllers/PlayerInput";
+import { PlayerInput } from "./Entity/PlayerInput";
 import { PlayerCamera } from "../Controllers/PlayerCamera";
 import { PlayerUI } from "../Controllers/PlayerUI";
 import { Engine } from "@babylonjs/core/Engines/engine";
