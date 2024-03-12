@@ -163,4 +163,18 @@ export class MapHelper {
             });
         });
     }
+
+    public findAvailableColor(players, colors) {
+        let randomColor = colors[Math.floor(Math.random() * colors.length)];
+        let found = false;
+        players.forEach((p) => {
+            if (randomColor === p.color) {
+                found = true;
+            }
+        });
+        if (found) {
+            return this.findAvailableColor(players, colors);
+        }
+        return randomColor;
+    }
 }

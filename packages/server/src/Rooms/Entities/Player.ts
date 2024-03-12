@@ -16,6 +16,7 @@ export class Player extends Entity {
     @type("int8") score: number = 0;
     @type("int8") bombs: number;
     @type("int8") health: number;
+    @type("string") color: string;
 
     @type("int16") sequence: number = 0;
     @type("float32") rot: number = 0;

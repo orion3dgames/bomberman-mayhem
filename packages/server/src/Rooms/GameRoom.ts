@@ -15,11 +15,17 @@ export class GameRoom extends Room<GameState> {
     public delayedRoundStartRef?: Delayed;
     public delayedRoomDeleteRef?: Delayed;
     public maxClients: number = 4;
-
     public autoDispose = true;
     private LOBBY_CHANNEL = "GameRoom";
-
     public mapHelper: MapHelper;
+
+    // player colors
+    public colors: string[] = [
+        "#eb4034", // red
+        "#58eb34", // green
+        "#2e84e6", // blue
+        "#d332db", // purple
+    ];
 
     private log(msg: string, client?: Client | string) {
         if (process.env.ROOM_LOG_DISABLE == "true") return;
@@ -85,6 +91,9 @@ export class GameRoom extends Room<GameState> {
 
         // find spawnpoint
         let spawnpoint = this.mapHelper.setSpawnPoint(client.sessionId);
+        let color = this.mapHelper.findAvailableColor(this.state.players, this.colors);
+
+        console.log("findAvailableColor", color);
 
         let player = new Player(
             {
@@ -93,6 +102,7 @@ export class GameRoom extends Room<GameState> {
                 admin: this.state.players.size == 0,
                 col: spawnpoint.col,
                 row: spawnpoint.row,
+                color: color,
             },
             this
         );

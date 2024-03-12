@@ -45,7 +45,7 @@ export class PlayerUI {
 
     setCurrentPlayer(entity) {
         // create debug ui + events
-        //this._DebugBox = new DebugBox(this._ui, this._engine, this._scene, entity);
+        this._DebugBox = new DebugBox(this._ui, this._engine, this._scene, entity);
 
         //
         this._CharacterStats = new CharacterStats(this._ui, this._engine, this._scene, entity, this._game);

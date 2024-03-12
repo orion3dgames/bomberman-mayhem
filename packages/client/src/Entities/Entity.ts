@@ -40,6 +40,7 @@ export class Entity extends TransformNode {
     public row: number = 0;
     public bombs: number = 0;
     public health: number = 0;
+    public color: string = "#000000";
 
     constructor(name: string, scene: Scene, gameScene: GameScene, entity, isCurrentPlayer = false) {
         super(name, scene);
@@ -93,7 +94,7 @@ export class Entity extends TransformNode {
         });
 
         // show entoty label
-        this.characterLabel = this._ui.createEntityLabel(this);
+        //this.characterLabel = this._ui.createEntityLabel(this);
     }
 
     public spawn() {
@@ -102,7 +103,8 @@ export class Entity extends TransformNode {
         const box = MeshBuilder.CreateBox("box", { size: boxSize }, this._scene);
         box.position = new Vector3(0, boxSize / 2, 0);
         const material = new StandardMaterial("box-material", this._scene);
-        material.diffuseColor = Color3.Black();
+        material.diffuseColor = Color3.FromHexString(this.color);
+        material.specularColor = Color3.Black();
         box.material = material;
         box.parent = this;
         this.playerMesh = box;
@@ -111,6 +113,7 @@ export class Entity extends TransformNode {
         const sphere = MeshBuilder.CreateSphere("spere", { diameter: boxSize, segments: 2 }, this._scene);
         const sphere_material = new StandardMaterial("sphere-material", this._scene);
         sphere_material.diffuseColor = Color3.Black();
+        sphere_material.specularColor = Color3.Black();
         sphere.material = material;
         sphere.parent = box;
         sphere.position = new Vector3(0, 0, -0.2);
