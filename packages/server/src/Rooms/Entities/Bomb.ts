@@ -10,7 +10,7 @@ export class Bomb extends Entity {
 
     public owner;
     public timeoutTimer;
-    public timeout: number = 1000;
+    public timeout: number = 3000;
 
     constructor(args, room: GameRoom) {
         super(args, room);

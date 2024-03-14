@@ -24,7 +24,7 @@ export class PlayerCamera {
         camYAxis.rotation = new Vector3(1.2, 0, 0);
         camYAxis.parent = cameraRoot;
 
-        var camera = new UniversalCamera("playercamera", new Vector3(0, 0, -45), this._scene);
+        var camera = new UniversalCamera("playercamera", new Vector3(0, 1, -45), this._scene);
         camera.lockedTarget = cameraRoot.position;
         camera.fov = 0.35;
         camera.parent = camYAxis;

@@ -34,13 +34,13 @@ export class CharacterStats {
     _createUI() {
         let debugPanel = new Rectangle("panel-debugBox");
         debugPanel.thickness = 0;
-        debugPanel.top = "15px";
+        debugPanel.top = "-15px";
         debugPanel.fontFamily = this._game.config.fontFamily;
         debugPanel.left = "15px";
-        debugPanel.width = "150px;";
-        debugPanel.height = "300px;";
+        debugPanel.width = 1;
+        debugPanel.height = "50px;";
         debugPanel.background = "rgba(0,0,0,0)";
-        debugPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+        debugPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         debugPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         this._ui.addControl(debugPanel);
 
@@ -62,7 +62,7 @@ export class CharacterStats {
     // debug panel refresh
     private _update() {
         let locationText = "";
-        locationText += "Health: " + this._entity.health + " \n";
+        locationText += "Health: " + this._entity.health + " | ";
         locationText += "Bombs: " + this._entity.bombs + "";
         this._debugTextUI.text = locationText;
     }

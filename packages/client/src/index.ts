@@ -84,7 +84,7 @@ class App {
 
     private async _render(): Promise<void> {
         // render loop
-        this.engine.runRenderLoop(() => {
+        this.engine.runRenderLoop(async () => {
             // monitor state
             this.game.state = this.checkForSceneChange();
 
@@ -94,7 +94,7 @@ class App {
                 case SceneName.HOME:
                     this.clearScene();
                     this.game.currentScene = new HomeScene();
-                    this.createScene();
+                    await this.createScene();
                     break;
 
                 ///////////////////////////////////////
@@ -102,7 +102,7 @@ class App {
                 case SceneName.ROOM:
                     this.clearScene();
                     this.game.currentScene = new RoomScene();
-                    this.createScene();
+                    await this.createScene();
                     break;
 
                 ///////////////////////////////////////
@@ -110,7 +110,7 @@ class App {
                 case SceneName.GAME:
                     this.clearScene();
                     this.game.currentScene = new GameScene();
-                    this.createScene();
+                    await this.createScene();
                     break;
 
                 default:

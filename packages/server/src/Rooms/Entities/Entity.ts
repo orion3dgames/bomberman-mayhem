@@ -9,6 +9,7 @@ export class Entity extends Schema {
     @type("int8") row: number = 0;
 
     public room: GameRoom;
+    public spawnPoint;
 
     constructor(args, room: GameRoom) {
         super();
@@ -17,6 +18,8 @@ export class Entity extends Schema {
 
         // add spawn data
         Object.assign(this, args);
+
+        console.log(this.spawnPoint, args);
     }
 
     public update(dt) {}

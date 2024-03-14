@@ -14,6 +14,7 @@ export class PlayerInput {
 
     public player_can_move: boolean = false;
     public space_pressed: boolean = false;
+    public debug_pressed: boolean = false;
 
     constructor(entity: Entity) {
         this._moveController = entity.moveController;
@@ -23,26 +24,24 @@ export class PlayerInput {
         console.log("[PlayerInput]", entity);
 
         this._scene.onKeyboardObservable.add((kbInfo: { type: any; event: { code: string } }) => {
-            this.vertical = 0;
-            this.horizontal = 0;
-
             switch (kbInfo.type) {
                 case KeyboardEventTypes.KEYDOWN:
                     // if
                     if (kbInfo.event.code === "ArrowUp") {
                         this.vertical = -1;
-                    }
-                    if (kbInfo.event.code === "ArrowDown") {
+                    } else if (kbInfo.event.code === "ArrowDown") {
                         this.vertical = 1;
-                    }
-                    if (kbInfo.event.code === "ArrowRight") {
+                    } else if (kbInfo.event.code === "ArrowRight") {
                         this.horizontal = -1;
-                    }
-                    if (kbInfo.event.code === "ArrowLeft") {
+                    } else if (kbInfo.event.code === "ArrowLeft") {
                         this.horizontal = 1;
                     }
+
                     if (kbInfo.event.code === "Space") {
                         this.space_pressed = true;
+                    }
+                    if (kbInfo.event.code === "KeyD") {
+                        this.debug_pressed = true;
                     }
 
                     break;
@@ -51,31 +50,30 @@ export class PlayerInput {
                     // if
                     if (kbInfo.event.code === "ArrowUp") {
                         this.vertical = 0;
-                    }
-                    if (kbInfo.event.code === "ArrowDown") {
+                    } else if (kbInfo.event.code === "ArrowDown") {
                         this.vertical = 0;
-                    }
-                    if (kbInfo.event.code === "ArrowRight") {
+                    } else if (kbInfo.event.code === "ArrowRight") {
                         this.horizontal = 0;
-                    }
-                    if (kbInfo.event.code === "ArrowLeft") {
+                    } else if (kbInfo.event.code === "ArrowLeft") {
                         this.horizontal = 0;
                     }
                     if (kbInfo.event.code === "Space") {
                         this.space_pressed = false;
                     }
+                    if (kbInfo.event.code === "KeyD") {
+                        this.debug_pressed = false;
+                    }
 
                     break;
             }
 
-            if (this.horizontal > 0 || this.horizontal < 0 || this.vertical > 0 || this.vertical < 0) {
+            if (this.horizontal !== 0 || this.vertical !== 0) {
+                console.log("[INPUT]", this.horizontal, this.vertical !== 0);
                 this.player_can_move = true;
-                this._moveController.move(this.vertical, this.horizontal);
+                this._moveController.processMove();
             } else {
                 this.player_can_move = false;
             }
-
-            console.log(this.vertical, this.horizontal, this.player_can_move);
         });
     }
 }

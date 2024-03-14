@@ -83,8 +83,17 @@ export class Entity extends TransformNode {
             // update player data from server data
             Object.assign(this, this._entity);
 
-            // update player position
-            this.moveController.setPositionAndRotation(this._entity);
+            // update entity position
+            if (!this.moveController.isAnimating && (this.row !== this.position.x || this.col !== this.position.z) && !this.isCurrentPlayer) {
+                let vertical = this.position.z - this.row;
+                let horizontal = this.position.x - this.col;
+                this.moveController.move(vertical, horizontal);
+            }
+
+            if (!this.moveController.isAnimating) {
+                // set default position
+                this.moveController.setPositionAndRotation(entity); // set next default position from server entity
+            }
 
             // do server reconciliation on client if current player only & not blocked
             if (this.isCurrentPlayer) {
@@ -113,11 +122,6 @@ export class Entity extends TransformNode {
     }
 
     public update(delta: number) {
-        // tween entity
-        if (this && this.moveController) {
-            //this.moveController.tween();
-        }
-
         // only for current player
         if (this.isCurrentPlayer) {
             this._camera.tween(this);
@@ -125,12 +129,8 @@ export class Entity extends TransformNode {
     }
 
     public updateServerRate() {
-        // process player movement
         if (this.isCurrentPlayer) {
-            //
-            //this.moveController.processMove();
-
-            // if
+            // if space is pressed
             if (this._input.space_pressed === true) {
                 this._room.send(ServerMsg.PLACE_BOMB);
                 this._input.space_pressed = false;

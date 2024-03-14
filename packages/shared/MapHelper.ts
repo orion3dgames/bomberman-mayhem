@@ -100,8 +100,8 @@ export class MapHelper {
         if (foundTile.id == "S") {
             this.spawnPoints.push({
                 player: false,
-                col: colId,
-                row: rowId,
+                col: rowId,
+                row: colId,
             });
         }
 
@@ -132,7 +132,6 @@ export class MapHelper {
                 let sessionId = "" + rowId + "-" + colId;
                 let type = CellType.GROUND;
 
-                /*
                 // if ground
                 let rand = Math.random();
                 if (tileID === " " && rand < 0.4) {
@@ -145,7 +144,6 @@ export class MapHelper {
                 if (tileID === "W") {
                     type = CellType.WALL;
                 }
-                */
 
                 let wall = new Cell(
                     {

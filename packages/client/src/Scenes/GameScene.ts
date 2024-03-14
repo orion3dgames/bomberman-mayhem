@@ -65,12 +65,12 @@ export class GameScene {
         var shadowGenerator = new ShadowGenerator(1024, light);
         shadowGenerator.filter = ShadowGenerator.FILTER_PCF;
         shadowGenerator.filteringQuality = ShadowGenerator.QUALITY_HIGH;
-        shadowGenerator.darkness = 0.3;
+        shadowGenerator.darkness = 0;
         this._shadow = shadowGenerator;
 
         // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
         var ambient = new HemisphericLight("ambient1", new Vector3(0, 1, 0), scene);
-        ambient.intensity = 0.5;
+        ambient.intensity = 0.8;
 
         const skyMaterial = new SkyMaterial("skyMaterial", scene);
         skyMaterial.backFaceCulling = false;
@@ -87,9 +87,6 @@ export class GameScene {
         // start camera
         this._camera = new PlayerCamera(this._scene);
 
-        // start UI
-        this._ui = new PlayerUI(this._scene, this._engine, this);
-
         // setup colyseus room
         // hack for devlopement
         if (!this._game.joinedRoom) {
@@ -98,14 +95,20 @@ export class GameScene {
             this._game.joinedRoom.send(ServerMsg.START_GAME_REQUESTED);
         }
 
-        // hide loading screen
-        setTimeout(() => {
-            this._game.engine.hideLoadingUI();
-        }, 1000);
-
         // set room
         this.room = this._game.joinedRoom;
         this.sessionId = this.room.sessionId;
+
+        // hide loading screen
+        setTimeout(() => {
+            this._game.engine.hideLoadingUI();
+            this.startGame();
+        }, 500);
+    }
+
+    startGame() {
+        // start UI
+        this._ui = new PlayerUI(this._scene, this._engine, this);
 
         ///////////////////////////////////////////////////////////////////////////
         /////////////////////////// COLYSEUS STATE
@@ -199,6 +202,9 @@ export class GameScene {
             let timePassed = (timeNow - timeServer) / 1000;
             let updateRate = rate / 1000; // game is networked update every 100ms
             if (timePassed >= updateRate) {
+                // send ping to server
+                this._game.joinedRoom.send(ServerMsg.PING, { date: Date.now() });
+
                 // player uppdate at server rate
                 this.entities.forEach((entity) => {
                     entity.updateServerRate(rate);

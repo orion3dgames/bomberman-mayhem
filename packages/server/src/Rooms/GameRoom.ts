@@ -103,6 +103,7 @@ export class GameRoom extends Room<GameState> {
                 col: spawnpoint.col,
                 row: spawnpoint.row,
                 color: color,
+                spawnPoint: spawnpoint,
             },
             this
         );
@@ -168,6 +169,10 @@ export class GameRoom extends Room<GameState> {
             const playerState: Player = this.state.players.get(client.sessionId) as Player;
             if (!playerState) {
                 return false;
+            }
+
+            if (type === ServerMsg.PING) {
+                client.send(ServerMsg.PONG, data);
             }
 
             if (type === ServerMsg.START_MAP_UPDATE) {

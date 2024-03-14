@@ -4,9 +4,13 @@ import { Animation } from "@babylonjs/core/Animations/animation";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { CellType } from "../../../shared/types";
 import { ParticleSystem } from "@babylonjs/core/Particles/particleSystem";
-import { Color4 } from "@babylonjs/core/Maths/math.color";
+import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 import { Sound } from "@babylonjs/core/Audio/sound";
+import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
+import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
+import { Material } from "@babylonjs/core/Materials/material";
+import { Engine } from "@babylonjs/core/Engines/engine";
 
 export class Explosion extends TransformNode {
     public _generator;
@@ -28,6 +32,7 @@ export class Explosion extends TransformNode {
 
     public texture;
     public animWheel;
+    public decals = [];
 
     constructor(name: string, scene: Scene, map, generator, entities, camera, data) {
         super(name, scene);
@@ -78,13 +83,44 @@ export class Explosion extends TransformNode {
             particleSystem.start();
 
             // add decal
+            /*
+            newRow = row;
+            newCol = col;
             let cell = this._entities.get(newRow + "-" + newCol);
-            if (cell && cell.type === "ground") {
-                cell.visibility = 0.5;
-                setTimeout(() => {
-                    cell.visibility = 1;
-                }, 1000);
+            let decal;
+            console.log("LOOKING FOR CELL", newRow + "-" + newCol);
+            if (cell) {
+                console.log("ADDING DECAL AT", cell.id);
+                // adding decal
+                let decalMaterial = this._scene.getMaterialByName("explosionDecal") as StandardMaterial;
+                if (!decalMaterial) {
+                    decalMaterial = new StandardMaterial("explosionDecal");
+                    decalMaterial.diffuseColor = new Color3(0, 0, 0);
+                    decalMaterial.specularColor = Color3.Black();
+                    decalMaterial.opacityTexture = new Texture("textures/blast_opacity.png");
+                }
+
+                decal = MeshBuilder.CreateGround("decal", { width: 1, height: 1 });
+                decal.position = cell.position;
+                decal.position.y += 0.05;
+                decal.material = decalMaterial;
+
+                //Animate the bomb
+                const animWheel = new Animation("wheelAnimation", "visibility", 60, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
+                const wheelKeys = [];
+                wheelKeys.push({ frame: 0, value: 1 });
+                wheelKeys.push({ frame: 60, value: 0 });
+                wheelKeys.push({ frame: 120, value: 1 });
+                animWheel.setKeys(wheelKeys);
+                instance.animations = [];
+                instance.animations.push(animWheel);
+                console.log("DECAL STARTED");
+                this._scene.beginAnimation(decal, 0, 600, true, 1, () => {
+                    console.log("DECAL FINISHED");
+                    //decal.dispose();
+                });
             }
+            */
 
             // play epxlosion sound
             //this._generator.assets["explosionSound"].setPosition(new Vector3(newRow, 0, newCol));
@@ -93,9 +129,10 @@ export class Explosion extends TransformNode {
 
             // remove
             setTimeout(() => {
-                //particleSystem.dispose(true);
+                //decal.dispose();
+                particleSystem.dispose(true);
                 instance.dispose();
-            }, 1000);
+            }, 2000);
         }
     }
 

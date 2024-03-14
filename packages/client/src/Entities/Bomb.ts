@@ -75,9 +75,13 @@ export class Bomb extends TransformNode {
     }
 
     public spawn() {
+        let sizeMin = 0.6;
+        let sizeMax = 1;
+
         // create mesh
         let mesh = this._generator.bombModel;
         let instance = mesh.createInstance("bomb-" + this.col + "-" + this.row);
+        instance.scale = new Vector3(sizeMin, sizeMin, sizeMin);
         instance.position = new Vector3(0, 0, 0);
         instance.receiveShadows = true;
         instance.parent = this;
@@ -100,19 +104,19 @@ export class Bomb extends TransformNode {
         //At the animation key 0, the value of rotation.y is 0
         wheelKeys.push({
             frame: 0,
-            value: new Vector3(0.8, 0.8, 0.8),
+            value: new Vector3(sizeMin, sizeMin, sizeMin),
         });
 
         //At the animation key 30, (after 1 sec since animation fps = 30) the value of rotation.y is 2PI for a complete rotation
         wheelKeys.push({
             frame: 15,
-            value: new Vector3(1.2, 1.2, 1.2),
+            value: new Vector3(sizeMax, sizeMax, sizeMax),
         });
 
         //At the animation key 60
         wheelKeys.push({
             frame: 30,
-            value: new Vector3(0.8, 0.8, 0.8),
+            value: new Vector3(sizeMin, sizeMin, sizeMin),
         });
 
         //set the keys

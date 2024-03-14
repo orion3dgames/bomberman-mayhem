@@ -61,9 +61,10 @@ export class LevelGenerator {
 
     //
     public generateMaterials() {
-        let wallTxt = new Texture("textures/wall_02.jpg", this._scene);
-        let groundTxt = new Texture("textures/ground_01.jpg", this._scene);
-        let wallBrokenTxt = new Texture("textures/wall_02_broken.jpg", this._scene);
+        let wallTxt = new Texture("textures/wall_04.jpg", this._scene);
+        let groundTxt = new Texture("textures/ground_03.jpg", this._scene);
+        let wallBrokenTxt = new Texture("textures/wall_03.jpg", this._scene);
+        let blastTxt = new Texture("textures/blast.png", this._scene);
 
         for (let tileID in this._map.tiles) {
             let tile = this._map.tiles[tileID];
@@ -145,8 +146,8 @@ export class LevelGenerator {
 
             // bomb
             if (tile.id === "T") {
-                const box = MeshBuilder.CreateSphere("box-" + tile.name, { diameter: 0.6 }, this._scene);
-                box.position = new Vector3(0, 0.4, 0);
+                const box = MeshBuilder.CreateBox("box-" + tile.name, { size: 1, height: 1 }, this._scene);
+                box.position = new Vector3(0, 0.5, 0);
                 box.material = this.materials[tile.name];
                 box.isVisible = false;
                 this.assets[tile.name] = box;

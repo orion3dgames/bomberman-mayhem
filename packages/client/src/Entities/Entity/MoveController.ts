@@ -25,7 +25,7 @@ export class MoveController {
     private isCurrentPlayer: boolean = false;
     private isMoving: boolean = false;
 
-    private isAnimating: boolean = false;
+    public isAnimating: boolean = false;
 
     constructor(player: Entity) {
         this._scene = player._scene;
@@ -45,8 +45,8 @@ export class MoveController {
     }
 
     public setPositionAndRotation(entity): void {
-        this.nextPosition = new Vector3(entity.col, 0, entity.row);
-        this.nextRotation = new Vector3(0, entity.rot, 0);
+        this._player.position = new Vector3(entity.col, 0, entity.row);
+        //this._player.playerMesh.rotation = new Vector3(0, entity.rot, 0);
     }
 
     public tween() {
@@ -123,15 +123,13 @@ export class MoveController {
         instance.animations.push(animWheel);
 
         // calculate position
-        let speed = 1;
-        let newCol = this._player.position.x - horizontal * speed;
-        let newRow = this._player.position.z - vertical * speed;
+        let newPosition = this.calculateNewPosition(horizontal, vertical);
 
         // start animation
         this._scene.beginAnimation(instance, 0, totalAnimationLength, false, animationSpeed, () => {
             console.log("[move]", "ANIMATION FINISHED", this._player.playerMesh.rotation);
             this._player.playerMesh.rotation = new Vector3(0, 0, 0);
-            this._player.position = new Vector3(newCol, 0, newRow);
+            this._player.position = newPosition;
             instance.setPivotPoint(new Vector3(0, 0, 0));
             this.isAnimating = false;
         });
@@ -140,7 +138,52 @@ export class MoveController {
         this.isAnimating = true;
     }
 
-    /*
+    public calculateNewPosition(horizontal, vertical): Vector3 {
+        let speed = 1;
+        let newCol = this._player.position.x - horizontal * speed;
+        let newRow = this._player.position.z - vertical * speed;
+        return new Vector3(newCol, 0, newRow);
+    }
+
+    public processMove() {
+        console.log("[move]", "PROCESS MOVE");
+        // detect movement
+        if (!this.isAnimating) {
+            console.log("[move]", "CAN PROCESS MOVE");
+            // increment seq
+            this.sequence++;
+
+            // prepare input to be sent
+            let latestInput = {
+                seq: this.sequence,
+                h: this._player._input.horizontal,
+                v: this._player._input.vertical,
+            };
+
+            if (this.canMove(latestInput)) {
+                console.log("[move]", "NAVMESH PASS");
+                // sent current input to server for processing
+                this._room.send(ServerMsg.PLAYER_MOVE, latestInput);
+
+                // do client side prediction
+                this.predictionMove(latestInput);
+            } else {
+                console.log("[move]", "NAVMESH DENIED");
+                this._player._input.player_can_move = false;
+                this._player._input.horizontal = 0;
+                this._player._input.vertical = 0;
+            }
+        }
+    }
+
+    // prediction move
+    public predictionMove(latestInput: PlayerInputs) {
+        // move player locally
+        this.move(latestInput.v, latestInput.h);
+
+        // Save this input for later reconciliation.
+        this.playerInputs.push(latestInput);
+    }
 
     // server Reconciliation. Re-apply all the inputs not yet processed by the server
     public reconcileMove(latestSequence) {
@@ -160,11 +203,22 @@ export class MoveController {
                 this.playerInputs.splice(j, 1);
             } else {
                 // Not processed by the server yet. Re-apply it.
-                this.move(nextInput);
+                this.move(nextInput.v, nextInput.h);
                 j++;
             }
         }
     }
+
+    public canMove(playerInput) {
+        let newPosition = this.calculateNewPosition(playerInput.h, playerInput.v);
+        let cell = this._room.state.cells.get(newPosition.z + "-" + newPosition.x);
+        if (cell && cell.type === CellType.GROUND) {
+            return true;
+        }
+        return false;
+    }
+
+    /*
 
     // prediction move
     public predictionMove(latestInput: PlayerInputs) {

@@ -53,6 +53,8 @@ export class Cell extends TransformNode {
         // set entity
         Object.assign(this, entity);
 
+        this.name = this.id;
+
         // set tile
         this.tile = this._map.findTile(this.type, "name");
 

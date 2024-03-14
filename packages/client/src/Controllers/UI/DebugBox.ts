@@ -3,21 +3,24 @@ import { Scene } from "@babylonjs/core/scene";
 import { AdvancedDynamicTexture, TextBlock, Rectangle, Control } from "@babylonjs/gui/2D";
 import { countPlayers, roundTo } from "../../Utils/Utils";
 import { Entity } from "../../Entities/Entity";
+import { ServerMsg } from "../../../../shared/types";
 
 export class DebugBox {
     private _engine: Engine;
     private _scene: Scene;
+    private _room;
     private ping: number = 0;
     private _entity: Entity;
 
     private _ui;
     private _debugTextUI;
 
-    constructor(ui: AdvancedDynamicTexture, engine: Engine, scene: Scene, entity: Entity) {
+    constructor(ui: AdvancedDynamicTexture, engine: Engine, scene: Scene, entity: Entity, room) {
         this._ui = ui;
         this._engine = engine;
         this._scene = scene;
         this._entity = entity;
+        this._room = room;
 
         this._createUI();
 
@@ -25,6 +28,12 @@ export class DebugBox {
         this._scene.registerBeforeRender(() => {
             // refresh
             this._update();
+        });
+
+        // on pong
+        this._room.onMessage(ServerMsg.PONG, (data) => {
+            let dateNow = Date.now();
+            this.ping = dateNow - data.date;
         });
     }
 
@@ -60,9 +69,9 @@ export class DebugBox {
         locationText += "Total Entities: " + 0 + " \n";
         locationText += "FPS: " + roundTo(this._engine.getFps(), 0) + " \n";
         locationText += "Ping: " + this.ping + "ms\n";
-        locationText += "X: " + roundTo(this._entity.position.x, 2) + "\n";
+        locationText += "X: " + roundTo(this._entity.position.x, 2) + " ---> " + this._entity.col + "\n";
         locationText += "y: " + roundTo(this._entity.position.y, 2) + "\n";
-        locationText += "z: " + roundTo(this._entity.position.z, 2) + "\n";
+        locationText += "z: " + roundTo(this._entity.position.z, 2) + " ---> " + this._entity.row + "\n";
         locationText += "RotX: " + roundTo(this._entity.playerMesh.rotation.x, 2) + "\n";
         locationText += "RotY: " + roundTo(this._entity.playerMesh.rotation.y, 2) + "\n";
         locationText += "RotZ: " + roundTo(this._entity.playerMesh.rotation.z, 2) + "\n";

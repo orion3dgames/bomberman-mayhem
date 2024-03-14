@@ -6,19 +6,17 @@ import { Rectangle } from "@babylonjs/gui/2D/controls/rectangle";
 import { TextBlock, TextWrapping } from "@babylonjs/gui/2D/controls/textBlock";
 import { Button } from "@babylonjs/gui/2D/controls/button";
 import { Control } from "@babylonjs/gui/2D/controls/control";
-import { Entity } from "../Entities/Entity";
 import { SceneName } from "../../../shared/types";
 import { GameScene } from "../Scenes/GameScene";
 import { CharacterStats } from "./UI/CharacterStats";
+import { ScoreBoard } from "./UI/ScoreBoard";
 
 export class PlayerUI {
-    private _scene: Scene;
+    public _scene: Scene;
     private _engine: Engine;
-    private _game;
-    private _entities;
-
-    public _room;
-    public _players;
+    public _game;
+    public _entities;
+    private _room;
     public _currentPlayer;
 
     public _ui: AdvancedDynamicTexture;
@@ -26,12 +24,14 @@ export class PlayerUI {
 
     public _DebugBox: DebugBox;
     public _CharacterStats: CharacterStats;
+    public _ScoreBoard: ScoreBoard;
 
     constructor(scene, engine, gameScene: GameScene) {
         this._scene = scene;
         this._engine = engine;
         this._game = gameScene._game;
         this._entities = gameScene.entities;
+        this._room = gameScene._game.joinedRoom;
 
         // create ui
         this._uiLabels = AdvancedDynamicTexture.CreateFullscreenUI("UI_Names", true, this._scene);
@@ -45,10 +45,11 @@ export class PlayerUI {
 
     setCurrentPlayer(entity) {
         // create debug ui + events
-        this._DebugBox = new DebugBox(this._ui, this._engine, this._scene, entity);
+        //this._DebugBox = new DebugBox(this._ui, this._engine, this._scene, entity, this._room);
 
         //
         this._CharacterStats = new CharacterStats(this._ui, this._engine, this._scene, entity, this._game);
+        this._ScoreBoard = new ScoreBoard(this, entity);
 
         // debug
         /*

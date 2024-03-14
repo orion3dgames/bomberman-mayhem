@@ -22,7 +22,6 @@ export class Player extends Entity {
     @type("float32") rot: number = 0;
 
     public explosion_size: number;
-    public spawnPoint;
 
     constructor(args, room: GameRoom) {
         super(args, room);
@@ -31,13 +30,24 @@ export class Player extends Entity {
         this.type = CellType.PLAYER;
 
         // set default
-        this.health = 1; // default health
-        this.bombs = 100; // 1 bomb by default
-        this.explosion_size = 8; //
+        this.health = 3; // default health
+        this.bombs = 10; // 1 bomb by default
+        this.explosion_size = 3; //
+
+        console.log();
+    }
+
+    update(dt) {
+        super.update(dt);
+        if (this.health < 1) {
+            this.row = this.spawnPoint.row;
+            this.col = this.spawnPoint.col;
+            this.health = 1;
+        }
     }
 
     move(playerInput) {
-        //
+        // get current cell
         let previousCell = this.room.state.cells.get(this.row + "-" + this.col);
 
         // calculate new position
@@ -53,11 +63,14 @@ export class Player extends Entity {
             this.rot = this.rot + (newRotY - this.rot);
             this.sequence = playerInput.seq;
 
-            //
-            /*
+            // set playerID
             let cell = this.room.state.cells.get(this.row + "-" + this.col);
-            cell.playerId = this.sessionId;
-            previousCell.playerId = "";*/
+            if (cell) {
+                cell.playerId = this.sessionId;
+            }
+            if (previousCell) {
+                previousCell.playerId = "";
+            }
         }
     }
 
