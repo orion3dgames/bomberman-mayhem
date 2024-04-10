@@ -6,7 +6,7 @@ import { Rectangle } from "@babylonjs/gui/2D/controls/rectangle";
 import { TextBlock, TextWrapping } from "@babylonjs/gui/2D/controls/textBlock";
 import { Button } from "@babylonjs/gui/2D/controls/button";
 import { Control } from "@babylonjs/gui/2D/controls/control";
-import { SceneName } from "../../../shared/types";
+import { SceneName, ServerMsg } from "../../../shared/types";
 import { GameScene } from "../Scenes/GameScene";
 import { CharacterStats } from "./UI/CharacterStats";
 import { ScoreBoard } from "./UI/ScoreBoard";
@@ -41,6 +41,11 @@ export class PlayerUI {
 
         // create base ui
         this.create(gameScene);
+
+        // setup ui events
+        this._room.onMessage(ServerMsg.PONG, (message) => {
+            console.log(ServerMsg[ServerMsg.START_GAME], message);
+        });
     }
 
     setCurrentPlayer(entity) {

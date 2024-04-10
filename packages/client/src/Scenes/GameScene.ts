@@ -176,40 +176,48 @@ export class GameScene {
             console.log(ServerMsg[ServerMsg.START_GAME], message);
         });
 
-        // game loop
-        let timeServer = Date.now();
+        ////////////////////////////////////////////////////
+        // main game loop
+
+        const lastUpdates = {
+            SERVER: Date.now(),
+            SLOW: Date.now(),
+            PING: Date.now(),
+        };
+
         this._scene.registerBeforeRender(() => {
             let delta = this._engine.getFps();
-            let timeNow = Date.now();
-
-            // update game state first
-            /*
-            this._map.cells = [...this._map.baseCells];
-            this.entities.forEach((entity) => {
-                if (this._map.cells[entity.x][entity.z] && entity.tile && this._map.cells[entity.x][entity.z] !== entity.tile) {
-                    console.log("UPDATE CELL", this._map.cells);
-                    this._map.cells[entity.x][entity.z] = entity.tile;
-                }
-            });*/
+            const currentTime = Date.now();
 
             // game update loop
             this.entities.forEach((entity) => {
+                // 60 fps
                 entity.update(delta);
+
+                // server rate
+                if (currentTime - lastUpdates["SERVER"] >= 100) {
+                    entity.updateServerRate(100);
+                }
+
+                // slow rate
+                if (currentTime - lastUpdates["SLOW"] >= 100) {
+                    entity.updateServerRate(100);
+                }
             });
 
-            // server update rate
-            let rate = 100;
-            let timePassed = (timeNow - timeServer) / 1000;
-            let updateRate = rate / 1000; // game is networked update every 100ms
-            if (timePassed >= updateRate) {
-                // send ping to server
-                this._game.joinedRoom.send(ServerMsg.PING, { date: Date.now() });
+            // reset timers for entities
+            if (currentTime - lastUpdates["SERVER"] >= 100) {
+                lastUpdates["SERVER"] = currentTime;
+            }
+            if (currentTime - lastUpdates["SLOW"] >= 1000) {
+                lastUpdates["SLOW"] = currentTime;
+            }
 
-                // player uppdate at server rate
-                this.entities.forEach((entity) => {
-                    entity.updateServerRate(rate);
-                });
-                timeServer = timeNow;
+            // game update loop
+            if (currentTime - lastUpdates["PING"] >= 1000) {
+                // send ping to server
+                this.room.send(ServerMsg.PING);
+                lastUpdates["PING"] = currentTime;
             }
         });
     }

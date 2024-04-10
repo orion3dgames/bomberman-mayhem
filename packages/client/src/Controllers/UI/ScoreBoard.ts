@@ -6,6 +6,7 @@ import { PlayerUI } from "../PlayerUI";
 import { Control } from "@babylonjs/gui/2D/controls/control";
 import { Rectangle } from "@babylonjs/gui/2D/controls/rectangle";
 import { TextBlock } from "@babylonjs/gui/2D/controls/textBlock";
+import { Color3 } from "@babylonjs/core";
 
 export class ScoreBoard {
     private _engine: Engine;
@@ -40,8 +41,9 @@ export class ScoreBoard {
         debugPanel.fontFamily = this._game.config.fontFamily;
         debugPanel.left = "15px";
         debugPanel.width = "300px;";
-        debugPanel.height = "300px;";
-        debugPanel.background = "rgba(0,0,0,0)";
+        debugPanel.height = "100px;";
+        debugPanel.adaptHeightToChildren = false;
+        debugPanel.background = "rgba(0,0,0, .5)";
         debugPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
         debugPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
         this._ui.addControl(debugPanel);
@@ -60,14 +62,18 @@ export class ScoreBoard {
             if (entity.type === "player") {
                 const debugText = new TextBlock("debugText", entity.name + ": " + entity.score);
                 debugText.color = "#FFF";
-                debugText.top = top + "5x";
+                debugText.topInPixels = top;
                 debugText.left = "5px";
                 debugText.fontSize = "22px;";
+                debugText.height = "25px";
+                debugText.color = entity.color;
+                debugText.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+                debugText.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
                 debugText.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
                 debugText.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
                 this._panel.addControl(debugText);
 
-                top += 50;
+                top = top + 25;
             }
         });
     }
