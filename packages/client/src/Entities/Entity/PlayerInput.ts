@@ -27,13 +27,13 @@ export class PlayerInput {
             switch (kbInfo.type) {
                 case KeyboardEventTypes.KEYDOWN:
                     // if
-                    if (kbInfo.event.code === "ArrowUp") {
+                    if (kbInfo.event.code === "ArrowUp" || kbInfo.event.code === "KeyW") {
                         this.vertical = -1;
-                    } else if (kbInfo.event.code === "ArrowDown") {
+                    } else if (kbInfo.event.code === "ArrowDown" || kbInfo.event.code === "KeyS") {
                         this.vertical = 1;
-                    } else if (kbInfo.event.code === "ArrowRight") {
+                    } else if (kbInfo.event.code === "ArrowRight" || kbInfo.event.code === "KeyD") {
                         this.horizontal = -1;
-                    } else if (kbInfo.event.code === "ArrowLeft") {
+                    } else if (kbInfo.event.code === "ArrowLeft" || kbInfo.event.code === "KeyA") {
                         this.horizontal = 1;
                     }
 
@@ -48,13 +48,13 @@ export class PlayerInput {
 
                 case KeyboardEventTypes.KEYUP:
                     // if
-                    if (kbInfo.event.code === "ArrowUp") {
+                    if (kbInfo.event.code === "ArrowUp" || kbInfo.event.code === "KeyW") {
                         this.vertical = 0;
-                    } else if (kbInfo.event.code === "ArrowDown") {
+                    } else if (kbInfo.event.code === "ArrowDown" || kbInfo.event.code === "KeyS") {
                         this.vertical = 0;
-                    } else if (kbInfo.event.code === "ArrowRight") {
+                    } else if (kbInfo.event.code === "ArrowRight" || kbInfo.event.code === "KeyD") {
                         this.horizontal = 0;
-                    } else if (kbInfo.event.code === "ArrowLeft") {
+                    } else if (kbInfo.event.code === "ArrowLeft" || kbInfo.event.code === "KeyA") {
                         this.horizontal = 0;
                     }
                     if (kbInfo.event.code === "Space") {
