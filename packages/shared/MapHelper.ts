@@ -140,6 +140,12 @@ export class MapHelper {
                     type = CellType.WALL;
                 }
 
+                // make sure no spawn point are at 2 tiles around
+                if (this.isNearSpawnPoint(rowId, colId)) {
+                    console.error(rowId, colId, "IS NEAR A SPAWN POINT");
+                    type = CellType.GROUND;
+                }
+
                 // if wall
                 if (tileID === "W") {
                     type = CellType.WALL;
@@ -165,6 +171,16 @@ export class MapHelper {
                 this.shadow_map[rowId][colId] = type;
             });
         });
+    }
+
+    public isNearSpawnPoint(rowId, colId, radius = 1) {
+        let found = false;
+        this.spawnPoints.forEach((spawn) => {
+            if (Math.abs(colId - spawn.col) <= radius && Math.abs(rowId - spawn.row) <= radius) {
+                found = true;
+            }
+        });
+        return found;
     }
 
     public findAvailableColor(players, colors) {
