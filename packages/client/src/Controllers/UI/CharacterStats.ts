@@ -38,7 +38,7 @@ export class CharacterStats {
         debugPanel.fontFamily = this._game.config.fontFamily;
         debugPanel.left = "15px";
         debugPanel.width = 1;
-        debugPanel.height = "50px;";
+        debugPanel.height = "200px;";
         debugPanel.background = "rgba(0,0,0,0)";
         debugPanel.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
         debugPanel.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
@@ -62,8 +62,9 @@ export class CharacterStats {
     // debug panel refresh
     private _update() {
         let locationText = "";
-        locationText += "Health: " + this._entity.health + " | ";
-        locationText += "Bombs: " + this._entity.bombs + "";
+        locationText += "Health: " + this._entity.health + " \n ";
+        locationText += "Bombs: " + this._entity.bombs + " \n ";
+        locationText += "Speed: " + this._entity.speed + " \n ";
         this._debugTextUI.text = locationText;
     }
 }

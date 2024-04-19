@@ -40,6 +40,7 @@ export class Entity extends TransformNode {
     public bombs: number = 0;
     public health: number = 0;
     public color: string = "#000000";
+    public speed: number = 1;
 
     constructor(name: string, scene: Scene, gameScene: GameScene, entity, isCurrentPlayer = false) {
         super(name, scene);

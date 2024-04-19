@@ -34,6 +34,13 @@ export enum CellType {
     EXPLOSION = "explosion",
     PLAYER = "player",
     BOMB = "bomb",
+    POWER_UP = "power_up",
+}
+
+export enum PowerUpTypes {
+    HEALTH = 0,
+    BOMB,
+    SPEED,
 }
 
 ///////////////////////////////

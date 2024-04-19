@@ -164,6 +164,21 @@ export class LevelGenerator {
             }
         }
 
+        //
+        const box = MeshBuilder.CreateSphere("powerup", { diameter: 0.5 }, this._scene);
+        box.position = new Vector3(0, 0.5, 0);
+        box.isEnabled(false);
+        this.assets["powerup"] = box;
+
+        var material = new StandardMaterial("powerup_0");
+        material.diffuseColor = Color3.Blue();
+
+        var material = new StandardMaterial("powerup_1");
+        material.diffuseColor = Color3.Red();
+
+        var material = new StandardMaterial("powerup_2");
+        material.diffuseColor = Color3.Yellow();
+
         // particule
         this.explosionTexture = this._scene.getTextureByName("textures/particle_01.png");
         if (!this.explosionTexture) {

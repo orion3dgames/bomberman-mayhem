@@ -4,6 +4,7 @@ import { Entity } from "./Entity";
 import { CellType, ServerMsg } from "../../../../shared/types";
 import { Player } from "./Player";
 import { Cell } from "./Cell";
+import { PowerUp } from "./PowerUp";
 
 export class Bomb extends Entity {
     @type("int8") size: number = 3;
@@ -103,8 +104,21 @@ export class Bomb extends Entity {
                         this.room
                     );
                     this.room.state.cells.set(newCell.sessionId, newCell);
-
                     positions.set(key, { row: row, col: col });
+
+                    // 50% chance for a powerup to appear
+                    if (Math.random() <= 0.5) {
+                        let powerUp = new PowerUp(
+                            {
+                                sessionId: row + "-" + col,
+                                row: row,
+                                col: col,
+                                type: CellType.POWER_UP,
+                            },
+                            this.room
+                        );
+                        this.room.state.powers.set(powerUp.sessionId, powerUp);
+                    }
 
                     // stop the explosion if hit anything
                     return;

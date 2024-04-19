@@ -3,6 +3,7 @@ import { Player } from "./Entities/Player";
 import { Entity } from "./Entities/Entity";
 import { Cell } from "./Entities/Cell";
 import { Bomb } from "./Entities/Bomb";
+import { PowerUp } from "./Entities/PowerUp";
 
 export class GameState extends Schema {
     @type("string") status: "CREATED" | "PLAYING" | "ENDED" = "CREATED";
@@ -10,6 +11,7 @@ export class GameState extends Schema {
     @type({ map: Player }) players = new MapSchema<Player>();
     @type({ map: Cell }) cells = new MapSchema<Cell>();
     @type({ map: Bomb }) bombs = new MapSchema<Bomb>();
+    @type({ map: PowerUp }) powers = new MapSchema<PowerUp>();
 
     constructor(args) {
         super();

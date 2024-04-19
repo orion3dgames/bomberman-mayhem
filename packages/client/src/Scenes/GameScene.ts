@@ -16,9 +16,9 @@ import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator"
 import { Cell } from "../Entities/Cell";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { Bomb } from "../Entities/Bomb";
+import { PowerUp } from "../Entities/PowerUp";
 import { Explosion } from "../Entities/Explosion";
 import { SkyMaterial } from "@babylonjs/materials/sky/skyMaterial";
-import { AxesViewer } from "@babylonjs/core/Debug/axesViewer";
 
 export class GameScene {
     public _game: GameController;
@@ -158,6 +158,18 @@ export class GameScene {
                 }
                 this.entities.delete(sessionId);
             }, 200);
+        });
+
+        ////////////////////// POWER UPS
+        // on new entity
+        this.room.state.powers.onAdd((entity, sessionId) => {
+            this.entities.set(sessionId, new PowerUp(sessionId, this._scene, this, entity));
+        });
+        this.room.state.powers.onRemove((entity, sessionId) => {
+            if (this.entities.get(sessionId)) {
+                this.entities.get(sessionId).delete();
+            }
+            this.entities.delete(sessionId);
         });
 
         ////////////////////// END COLYSEUS STATE

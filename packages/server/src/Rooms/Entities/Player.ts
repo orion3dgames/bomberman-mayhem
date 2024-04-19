@@ -1,9 +1,10 @@
 import { Schema, type } from "@colyseus/schema";
 import { Entity } from "./Entity";
 import { GameRoom } from "../GameRoom";
-import { CellType, ServerMsg } from "../../../../shared/types";
+import { CellType, PowerUpTypes, ServerMsg } from "../../../../shared/types";
 import { generateId } from "@colyseus/core";
 import { Bomb } from "./Bomb";
+import { PowerUp } from "./PowerUp";
 
 export class Player extends Entity {
     @type("string") name: string;
@@ -14,8 +15,9 @@ export class Player extends Entity {
     @type("boolean") admin: boolean = false;
 
     @type("int8") score: number = 0;
-    @type("int8") bombs: number;
-    @type("int8") health: number;
+    @type("int8") bombs: number = 1;
+    @type("int8") health: number = 1;
+    @type("int8") speed: number = 1;
     @type("string") color: string;
 
     @type("int16") sequence: number = 0;
@@ -30,8 +32,8 @@ export class Player extends Entity {
         this.type = CellType.PLAYER;
 
         // set default
-        this.health = 3; // default health
-        this.bombs = 10; // 1 bomb by default
+        this.health = 1; // default health
+        this.bombs = 1; // 1 bomb by default
         this.explosion_size = 3; //
 
         console.log();
@@ -44,6 +46,29 @@ export class Player extends Entity {
             this.col = this.spawnPoint.col;
             this.health = 1;
         }
+    }
+
+    hasPowerUp(row, col) {
+        let found;
+        this.room.state.powers.forEach((power) => {
+            if (power.row === row && power.col === col) {
+                found = power;
+            }
+        });
+        return found;
+    }
+
+    consumePowerUp(powerup: PowerUp) {
+        if (powerup.power === PowerUpTypes.HEALTH) {
+            this.health += 1;
+        } else if (powerup.power === PowerUpTypes.BOMB) {
+            this.bombs += 1;
+        } else if (powerup.power === PowerUpTypes.SPEED) {
+            this.speed += 1;
+        }
+
+        // delete
+        this.room.state.powers.delete(powerup.sessionId);
     }
 
     move(playerInput) {
@@ -62,6 +87,12 @@ export class Player extends Entity {
             this.row = newRow;
             this.rot = this.rot + (newRotY - this.rot);
             this.sequence = playerInput.seq;
+
+            // check if power up in next position
+            let powerUpFound = this.hasPowerUp(newRow, newCol);
+            if (powerUpFound instanceof PowerUp) {
+                this.consumePowerUp(powerUpFound);
+            }
 
             // set playerID
             let cell = this.room.state.cells.get(this.row + "-" + this.col);
